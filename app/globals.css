@@ -4,49 +4,49 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
+    --background: 180 33% 99%; /* Snow White #FCFEFE */
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 142.1 76.2% 36.3%;
-    --primary-foreground: 355.7 100% 97.3%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --primary: 227 63% 29%; /* Institutional Blue #1B2F78 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 100% 49%; /* Highlight Red #F90000 */
+    --secondary-foreground: 0 0% 100%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 199 89% 48%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 0 100% 49%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 142.1 76.2% 36.3%;
-    --radius: 0.75rem;
+    --border: 214.3 31.8% 90%;
+    --input: 214.3 31.8% 90%;
+    --ring: 227 63% 29%;
+    --radius: 1rem;
   }
 
   @media (prefers-color-scheme: dark) {
     :root {
       --background: 222.2 84% 4.9%;
       --foreground: 210 40% 98%;
-      --card: 222.2 84% 4.9%;
+      --card: 222.2 84% 8%;
       --card-foreground: 210 40% 98%;
       --popover: 222.2 84% 4.9%;
       --popover-foreground: 210 40% 98%;
-      --primary: 142.1 70.6% 45.3%;
-      --primary-foreground: 144.4 96.6% 11.6%;
-      --secondary: 217.2 32.6% 17.5%;
+      --primary: 227 63% 45%; /* Slightly lighter blue for dark mode contrast */
+      --primary-foreground: 210 40% 98%;
+      --secondary: 0 100% 55%; /* Lighter red for dark mode contrast */
       --secondary-foreground: 210 40% 98%;
       --muted: 217.2 32.6% 17.5%;
       --muted-foreground: 215 20.2% 65.1%;
-      --accent: 199 89% 48%;
+      --accent: 0 100% 55%;
       --accent-foreground: 210 40% 98%;
       --destructive: 0 62.8% 30.6%;
       --destructive-foreground: 210 40% 98%;
       --border: 217.2 32.6% 17.5%;
       --input: 217.2 32.6% 17.5%;
-      --ring: 142.1 70.6% 45.3%;
+      --ring: 227 63% 45%;
     }
   }
 }
@@ -54,7 +54,6 @@
 @layer base {
   * {
     @apply border-border;
-    scroll-behavior: smooth !important;
   }
   body {
     background-color: hsl(var(--background));
@@ -66,35 +65,35 @@
 
 @layer utilities {
   .glassmorphism {
-    @apply bg-background/70 backdrop-blur-md border border-border/40;
+    @apply bg-background/80 backdrop-blur-md border border-border/50;
   }
   
   .glassmorphism-dark {
-    background: rgba(15, 23, 42, 0.65);
+    background: rgba(27, 47, 120, 0.1);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(27, 47, 120, 0.15);
   }
 
   .text-gradient-primary {
-    @apply bg-gradient-to-r from-emerald-500 via-teal-400 to-sky-500 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-[#1B2F78] via-[#4d5cb5] to-[#F90000] bg-clip-text text-transparent dark:from-emerald-400 dark:to-sky-400;
   }
 
   .text-gradient-secondary {
-    @apply bg-gradient-to-r from-sky-400 to-indigo-500 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-red-600 to-[#1B2F78] bg-clip-text text-transparent;
   }
 
   .bg-grid-pattern {
-    background-size: 40px 40px;
+    background-size: 50px 50px;
     background-image: 
-      linear-gradient(to right, rgba(148, 163, 184, 0.05) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
+      linear-gradient(to right, rgba(27, 47, 120, 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(27, 47, 120, 0.04) 1px, transparent 1px);
   }
 
   .bg-grid-pattern-dark {
-    background-size: 40px 40px;
+    background-size: 50px 50px;
     background-image: 
-      linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
   }
 }
 
