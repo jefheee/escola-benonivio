@@ -15,7 +15,7 @@ import { SCHOOL_INFO } from "@/lib/constants";
 export default function Home() {
   return (
     <div className="bg-pure-white text-slate-text min-h-screen flex flex-col relative overflow-hidden">
-      
+
       {/* Decorative Background Shapes */}
       <div className="absolute top-0 right-0 -z-10 w-96 h-96 opacity-[0.03] pointer-events-none">
         <svg className="w-full h-full fill-primary" preserveAspectRatio="none" viewBox="0 0 100 100">
@@ -31,23 +31,23 @@ export default function Home() {
       {/* Hero Section */}
       <section className="w-full bg-pure-white py-20 md:py-32 px-4 md:px-8 flex flex-col items-center justify-center text-center relative overflow-hidden">
         <div className="max-w-[800px] mx-auto flex flex-col items-center z-10">
-          
+
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface-container-low border border-soft-border text-secondary font-semibold text-xs mb-8 shadow-sm">
             <GraduationCap className="h-4 w-4" />
             <span>Matrículas Abertas 2026</span>
           </div>
-          
+
           {/* Title */}
           <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary mb-6 leading-tight">
-            Bem-vindo à EEB Prof. Benonívio João Martins
+            Bem-vindo à E.E.B Prof. Benonívio João Martins
           </h1>
-          
+
           {/* Paragraph */}
           <p className="text-base sm:text-lg md:text-xl text-slate-500 max-w-[640px] mb-10 font-medium leading-relaxed">
             Educação de excelência, focada na formação de cidadãos conscientes e preparados para o futuro. Um espaço dedicado ao desenvolvimento integral do aluno.
           </p>
-          
+
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
             <Link
@@ -73,7 +73,7 @@ export default function Home() {
       {/* Quick Access (Bento Style Cards) */}
       <section className="max-w-[1200px] mx-auto px-4 md:px-8 py-16 relative w-full">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          
+
           {/* Card 1 - Editais APP */}
           <Link
             href="/app"
@@ -137,14 +137,14 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
+
           {/* Category 1 */}
           <div className="flex flex-col gap-4">
             <h3 className="font-display text-lg md:text-xl font-bold text-primary flex items-center gap-2 mb-2">
               <Smile className="h-5 w-5 text-secondary" />
               <span>Anos Iniciais</span>
             </h3>
-            
+
             <a
               href="#"
               className="bg-pure-white border border-soft-border rounded-lg p-5 shadow-subtle flex items-center justify-between hover:border-secondary transition-colors cursor-pointer group outline-none"
