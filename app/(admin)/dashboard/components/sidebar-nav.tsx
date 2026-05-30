@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, MessageSquareCode, FileArchive } from 'lucide-react';
+import { LayoutDashboard, MessageSquareCode, FileArchive, Megaphone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function SidebarNav() {
@@ -18,6 +18,11 @@ export default function SidebarNav() {
       href: '/dashboard/whatsapp',
       label: 'Grupos de WhatsApp',
       icon: MessageSquareCode,
+    },
+    {
+      href: '/dashboard/avisos',
+      label: 'Mural de Avisos',
+      icon: Megaphone,
     },
     {
       href: '/dashboard/documentos',

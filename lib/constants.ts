@@ -20,6 +20,8 @@ export const SCHOOL_INFO = {
 
 export const NAV_ITEMS = [
   { label: "Início", href: "/" },
+  { label: "Avisos", href: "/avisos" },
+  { label: "Turmas", href: "/turmas" },
   { label: "Sobre", href: "/sobre" },
   { label: "Acervo", href: "/acervo" },
   { label: "APP", href: "/app" }

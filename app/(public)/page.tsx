@@ -11,8 +11,12 @@ import {
   Smile
 } from "lucide-react";
 import { SCHOOL_INFO } from "@/lib/constants";
+import { getAvisosDestaqueHome } from "@/lib/data/avisos";
+import AvisosCarousel from "@/components/features/avisos-carousel";
 
-export default function Home() {
+export default async function Home() {
+  const featuredNotices = await getAvisosDestaqueHome();
+
   return (
     <div className="bg-pure-white text-slate-text min-h-screen flex flex-col relative overflow-hidden">
 
@@ -69,6 +73,9 @@ export default function Home() {
 
         </div>
       </section>
+
+      {/* Mural de Avisos Carrossel */}
+      <AvisosCarousel avisos={featuredNotices} />
 
       {/* Quick Access (Bento Style Cards) */}
       <section className="max-w-[1200px] mx-auto px-4 md:px-8 py-16 relative w-full">
@@ -145,25 +152,25 @@ export default function Home() {
               <span>Anos Iniciais</span>
             </h3>
 
-            <a
-              href="#"
+            <Link
+              href="/turmas"
               className="bg-pure-white border border-soft-border rounded-lg p-5 shadow-subtle flex items-center justify-between hover:border-secondary transition-colors cursor-pointer group outline-none"
             >
               <span className="text-sm font-semibold text-slate-500 group-hover:text-primary transition-colors">
                 1º ao 5º Ano
               </span>
               <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-secondary transition-colors" />
-            </a>
+            </Link>
 
-            <a
-              href="#"
+            <Link
+              href="/turmas"
               className="bg-pure-white border border-soft-border rounded-lg p-5 shadow-subtle flex items-center justify-between hover:border-secondary transition-colors cursor-pointer group outline-none"
             >
               <span className="text-sm font-semibold text-slate-500 group-hover:text-primary transition-colors">
                 Apoio Pedagógico
               </span>
               <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-secondary transition-colors" />
-            </a>
+            </Link>
           </div>
 
           {/* Category 2 */}
@@ -173,25 +180,25 @@ export default function Home() {
               <span>Ensino Fundamental II</span>
             </h3>
 
-            <a
-              href="#"
+            <Link
+              href="/turmas"
               className="bg-pure-white border border-soft-border rounded-lg p-5 shadow-subtle flex items-center justify-between hover:border-secondary transition-colors cursor-pointer group outline-none"
             >
               <span className="text-sm font-semibold text-slate-500 group-hover:text-primary transition-colors">
                 6º ao 9º Ano
               </span>
               <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-secondary transition-colors" />
-            </a>
+            </Link>
 
-            <a
-              href="#"
+            <Link
+              href="/turmas"
               className="bg-pure-white border border-soft-border rounded-lg p-5 shadow-subtle flex items-center justify-between hover:border-secondary transition-colors cursor-pointer group outline-none"
             >
               <span className="text-sm font-semibold text-slate-500 group-hover:text-primary transition-colors">
                 Projetos Extracurriculares
               </span>
               <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-secondary transition-colors" />
-            </a>
+            </Link>
           </div>
 
           {/* Category 3 */}
@@ -201,25 +208,25 @@ export default function Home() {
               <span>Ensino Médio</span>
             </h3>
 
-            <a
-              href="#"
+            <Link
+              href="/turmas"
               className="bg-pure-white border border-soft-border rounded-lg p-5 shadow-subtle flex items-center justify-between hover:border-secondary transition-colors cursor-pointer group outline-none"
             >
               <span className="text-sm font-semibold text-slate-500 group-hover:text-primary transition-colors">
                 Novo Ensino Médio
               </span>
               <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-secondary transition-colors" />
-            </a>
+            </Link>
 
-            <a
-              href="#"
+            <Link
+              href="/turmas"
               className="bg-pure-white border border-soft-border rounded-lg p-5 shadow-subtle flex items-center justify-between hover:border-secondary transition-colors cursor-pointer group outline-none"
             >
               <span className="text-sm font-semibold text-slate-500 group-hover:text-primary transition-colors">
                 Preparatório ENEM
               </span>
               <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-secondary transition-colors" />
-            </a>
+            </Link>
           </div>
 
         </div>

@@ -243,18 +243,17 @@ export default function WhatsappManager({ initialGroups }: ManagerProps) {
                 </div>
               )}
 
-              {/* Serie Select */}
+              {/* Serie Input */}
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">Série / Nível</label>
-                <select
+                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">Série / Ano Escolar</label>
+                <input
                   name="serie"
-                  defaultValue={editingGroup?.serie || 'Ensino Fundamental II'}
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800 focus:bg-white focus:border-[#00185f] focus:ring-1 focus:ring-[#00185f] outline-none transition-all"
-                >
-                  <option value="Anos Iniciais">Anos Iniciais</option>
-                  <option value="Ensino Fundamental II">Ensino Fundamental II</option>
-                  <option value="Ensino Médio">Ensino Médio</option>
-                </select>
+                  type="text"
+                  required
+                  placeholder="Ex: 6º Ano, Anos Iniciais, Ensino Médio"
+                  defaultValue={editingGroup?.serie || ''}
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:border-[#00185f] focus:ring-1 focus:ring-[#00185f] outline-none transition-all"
+                />
               </div>
 
               {/* Turma Text Input */}
