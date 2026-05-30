@@ -19,6 +19,8 @@ export interface EscolaTurmaPost {
   titulo: string;
   conteudo: string | null;
   anexos: string[];
+  imagem_url: string | null;
+  link_referencia: string | null;
   created_at: string;
 }
 
@@ -142,6 +144,8 @@ export async function savePost(prevState: unknown, formData: FormData) {
   const titulo = formData.get('titulo') as string;
   const conteudo = formData.get('conteudo') as string;
   const anexos_raw = formData.get('anexos') as string;
+  const imagem_url = (formData.get('imagem_url') as string) || null;
+  const link_referencia = (formData.get('link_referencia') as string) || null;
 
   let anexos = [];
   if (anexos_raw) {
@@ -166,6 +170,8 @@ export async function savePost(prevState: unknown, formData: FormData) {
         titulo,
         conteudo,
         anexos,
+        imagem_url,
+        link_referencia,
       })
       .eq('id', id);
 
@@ -179,6 +185,8 @@ export async function savePost(prevState: unknown, formData: FormData) {
       titulo,
       conteudo,
       anexos,
+      imagem_url,
+      link_referencia,
     });
 
     if (error) {

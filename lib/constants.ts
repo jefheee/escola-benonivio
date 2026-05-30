@@ -24,5 +24,5 @@ export const NAV_ITEMS = [
   { label: "Turmas", href: "/turmas" },
   { label: "Sobre", href: "/sobre" },
   { label: "Acervo", href: "/acervo" },
-  { label: "APP", href: "/app" }
+  { label: "Documentos", href: "/documentos" }
 ] as const;

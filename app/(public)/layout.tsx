@@ -33,7 +33,7 @@ export default async function PublicLayout({
           </div>
         )}
         <Header />
-        <main className="flex-grow pt-24 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        <main className="flex-grow pt-[73px]">
           {children}
         </main>
         <Footer />

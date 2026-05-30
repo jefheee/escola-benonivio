@@ -16,7 +16,7 @@ export default function Header() {
 
   return (
     <header className="bg-pure-white border-b border-soft-border shadow-sm sticky top-0 z-50 w-full">
-      <div className="flex md:grid md:grid-cols-3 justify-between items-center w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="flex justify-between items-center w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         
         {/* Brand (Left Column) */}
         <div className="flex justify-start items-center">
@@ -58,19 +58,12 @@ export default function Header() {
 
         {/* Trailing CTA (Right Column / Mobile menu button) */}
         <div className="flex justify-end items-center gap-4">
-          <div className="hidden lg:flex flex-col text-right pr-2">
-            <span className="text-[10px] text-slate-400 font-bold block uppercase leading-none">Dúvidas? E-mail</span>
-            <a href="mailto:benonivio@sed.sc.gov.br" className="text-xs text-slate-500 font-bold hover:text-secondary mt-0.5">
-              benonivio@sed.sc.gov.br
-            </a>
-          </div>
-
           <button
             onClick={openWhatsAppDialog}
             className="bg-secondary text-white px-6 py-2.5 rounded hover:opacity-90 transition-all shadow-sm hidden md:flex items-center gap-2 text-sm font-bold outline-none"
           >
             <MessageSquare className="h-4 w-4" />
-            <span>Secretaria / WhatsApp</span>
+            <span>Fale Conosco</span>
           </button>
 
           {/* Mobile Menu Button */}

@@ -7,7 +7,7 @@ export default async function TurmasPage() {
   const allGroups = await getTurmasPublic();
 
   return (
-    <div className="py-6 space-y-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
       {/* Page Header */}
       <div className="text-center max-w-3xl mx-auto space-y-4">
         <div className="inline-block bg-indigo-100 text-indigo-800 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase border border-indigo-200 mb-1">

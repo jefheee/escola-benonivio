@@ -1,18 +1,79 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { LayoutDashboard, Award, Users, BookOpen, AlertCircle, CheckCircle2, Sliders, Globe, Zap, Music, GraduationCap, Sparkles } from 'lucide-react';
+import {
+  LayoutDashboard, Award, Users, BookOpen, AlertCircle, CheckCircle2,
+  Sliders, Globe, Zap, Music, GraduationCap, Plus, Trash2,
+  PhoneCall, FileText, History, Smile, HelpCircle, Eye
+} from 'lucide-react';
 import { savePaginaConteudo, EscolaPaginaConteudo } from '../actions';
 
 interface ManagerProps {
   initialPages: EscolaPaginaConteudo[];
 }
 
+// Icon mapper for live preview
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
+  FileText: FileText,
+  PhoneCall: PhoneCall,
+  History: History,
+  BookOpen: BookOpen,
+  Users: Users,
+  Award: Award,
+  Globe: Globe,
+  Smile: Smile,
+  HelpCircle: HelpCircle,
+};
+
+const ICON_OPTIONS = [
+  { value: 'FileText', label: 'Documento / Editais (FileText)' },
+  { value: 'PhoneCall', label: 'Telefone / Contato (PhoneCall)' },
+  { value: 'History', label: 'Histórico / Relógio (History)' },
+  { value: 'BookOpen', label: 'Livro / Estudos (BookOpen)' },
+  { value: 'Users', label: 'Comunidade / Alunos (Users)' },
+  { value: 'Award', label: 'Prêmio / Patrono (Award)' },
+  { value: 'Globe', label: 'Mundo / Internet (Globe)' },
+  { value: 'Smile', label: 'Sorriso / Apoio (Smile)' },
+];
+
+interface DynamicCard {
+  icone_nome: string;
+  titulo: string;
+  descricao: string;
+  link_url: string;
+}
+
+interface HomeHeroSettings {
+  mostrar_hero: boolean;
+  mostrar_avisos: boolean;
+  mostrar_acessos_rapidos: boolean;
+  mostrar_turmas: boolean;
+  badge: string;
+  titulo: string;
+  paragrafo: string;
+  bento_titulo: string;
+  turmas_titulo: string;
+  turmas_subtitulo: string;
+  cards_dinamicos: DynamicCard[];
+}
+
 // Default values for home_hero
-const DEFAULT_HOME_HERO = {
+const DEFAULT_HOME_HERO: HomeHeroSettings = {
+  mostrar_hero: true,
+  mostrar_avisos: true,
+  mostrar_acessos_rapidos: true,
+  mostrar_turmas: true,
   badge: 'Matrículas Abertas 2026',
   titulo: 'Bem-vindo à E.E.B Prof. Benonívio João Martins',
   paragrafo: 'Educação de excelência, focada na formação de cidadãos conscientes e preparados para o futuro. Um espaço dedicado ao desenvolvimento integral do aluno.',
+  bento_titulo: 'Acesso Rápido',
+  turmas_titulo: 'Nossas Turmas',
+  turmas_subtitulo: 'Estrutura curricular completa do básico ao avançado.',
+  cards_dinamicos: [
+    { icone_nome: "FileText", titulo: "Editais APP", descricao: "Consulte documentos, editais e publicações oficiais da Associação.", link_url: "/documentos" },
+    { icone_nome: "PhoneCall", titulo: "Contato", descricao: "Fale com a secretaria, direção ou coordenação pedagógica via WhatsApp.", link_url: "#contato" },
+    { icone_nome: "History", titulo: "Histórico", descricao: "Conheça a trajetória, o patrono e os valores da nossa instituição.", link_url: "/sobre" }
+  ]
 };
 
 // Default values for sobre
@@ -36,10 +97,18 @@ export default function PaginasManager({ initialPages }: ManagerProps) {
   const [isPending, startTransition] = useTransition();
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
-  // Home Hero State
+  // Home Hero State (Block CMS)
   const rawHomeHero = initialPages.find(p => p.slug === 'home_hero')?.conteudo_html;
-  const parsedHomeHero = rawHomeHero ? { ...DEFAULT_HOME_HERO, ...JSON.parse(rawHomeHero) } : DEFAULT_HOME_HERO;
-  const [homeHero, setHomeHero] = useState(parsedHomeHero);
+  const parsedHomeHero: HomeHeroSettings = rawHomeHero
+    ? { ...DEFAULT_HOME_HERO, ...JSON.parse(rawHomeHero) }
+    : DEFAULT_HOME_HERO;
+  
+  // Ensure cards array exists and has correct default layout
+  if (!parsedHomeHero.cards_dinamicos) {
+    parsedHomeHero.cards_dinamicos = DEFAULT_HOME_HERO.cards_dinamicos;
+  }
+
+  const [homeHero, setHomeHero] = useState<HomeHeroSettings>(parsedHomeHero);
 
   // Sobre State
   const rawSobre = initialPages.find(p => p.slug === 'sobre')?.conteudo_html;
@@ -55,7 +124,7 @@ export default function PaginasManager({ initialPages }: ManagerProps) {
     startTransition(async () => {
       const res = await savePaginaConteudo('home_hero', JSON.stringify(homeHero));
       if (res.success) {
-        showFeedback('success', 'Conteúdo da página Inicial salvo!');
+        showFeedback('success', 'Configurações da Página Inicial salvas com sucesso!');
       } else {
         showFeedback('error', res.error || 'Erro ao salvar conteúdo.');
       }
@@ -71,6 +140,30 @@ export default function PaginasManager({ initialPages }: ManagerProps) {
         showFeedback('error', res.error || 'Erro ao salvar conteúdo.');
       }
     });
+  };
+
+  // Dynamic Cards Helpers
+  const handleAddCard = () => {
+    if (homeHero.cards_dinamicos.length >= 5) {
+      showFeedback('error', 'O limite é de 5 cards de acesso rápido.');
+      return;
+    }
+    const updatedCards = [
+      ...homeHero.cards_dinamicos,
+      { icone_nome: 'FileText', titulo: '', descricao: '', link_url: '' }
+    ];
+    setHomeHero({ ...homeHero, cards_dinamicos: updatedCards });
+  };
+
+  const handleRemoveCard = (index: number) => {
+    const updatedCards = homeHero.cards_dinamicos.filter((_, idx) => idx !== index);
+    setHomeHero({ ...homeHero, cards_dinamicos: updatedCards });
+  };
+
+  const handleCardChange = (index: number, field: keyof DynamicCard, value: string) => {
+    const updatedCards = [...homeHero.cards_dinamicos];
+    updatedCards[index] = { ...updatedCards[index], [field]: value };
+    setHomeHero({ ...homeHero, cards_dinamicos: updatedCards });
   };
 
   return (
@@ -103,7 +196,7 @@ export default function PaginasManager({ initialPages }: ManagerProps) {
           }`}
         >
           <LayoutDashboard className="h-4 w-4" />
-          <span>Página Inicial (Hero Banner)</span>
+          <span>Página Inicial (CMS Blocos)</span>
         </button>
         <button
           onClick={() => setActiveTab('sobre')}
@@ -114,62 +207,279 @@ export default function PaginasManager({ initialPages }: ManagerProps) {
           }`}
         >
           <Award className="h-4 w-4" />
-          <span>Página de Histórico/Infra (Sobre)</span>
+          <span>Página Quem Somos (Sobre)</span>
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
         
         {/* LEFT COLUMN: Editing Form */}
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-subtle p-6 space-y-6">
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-subtle p-6 space-y-8">
           
           {activeTab === 'home' && (
-            <div className="space-y-4">
-              <h2 className="text-sm font-bold text-[#00185f] uppercase tracking-wider border-b pb-2 flex items-center gap-2">
-                <Sliders className="h-4 w-4" />
-                <span>Campos do Hero da Home</span>
-              </h2>
+            <div className="space-y-6">
+              
+              {/* Secção 1: Visibilidade de Blocos */}
+              <div className="space-y-4">
+                <h2 className="text-xs font-bold text-[#00185f] uppercase tracking-wider border-b pb-2 flex items-center gap-2">
+                  <Sliders className="h-4 w-4 text-slate-500" />
+                  <span>Visibilidade das Seções</span>
+                </h2>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Toggle Hero */}
+                  <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-lg p-3">
+                    <input
+                      type="checkbox"
+                      id="mostrar_hero"
+                      checked={homeHero.mostrar_hero}
+                      onChange={(e) => setHomeHero({ ...homeHero, mostrar_hero: e.target.checked })}
+                      className="h-4 w-4 text-[#00185f] focus:ring-[#00185f] border-slate-300 rounded cursor-pointer"
+                    />
+                    <label htmlFor="mostrar_hero" className="text-xs font-bold text-slate-700 cursor-pointer block select-none">
+                      Mostrar Hero Banner
+                    </label>
+                  </div>
 
-              {/* Badge Text */}
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 uppercase">Texto do Badge</label>
-                <input
-                  type="text"
-                  value={homeHero.badge}
-                  onChange={(e) => setHomeHero({ ...homeHero, badge: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-805 placeholder-slate-400 focus:bg-white focus:border-[#00185f] focus:ring-1 focus:ring-[#00185f] outline-none"
-                />
+                  {/* Toggle Avisos */}
+                  <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-lg p-3">
+                    <input
+                      type="checkbox"
+                      id="mostrar_avisos"
+                      checked={homeHero.mostrar_avisos}
+                      onChange={(e) => setHomeHero({ ...homeHero, mostrar_avisos: e.target.checked })}
+                      className="h-4 w-4 text-[#00185f] focus:ring-[#00185f] border-slate-300 rounded cursor-pointer"
+                    />
+                    <label htmlFor="mostrar_avisos" className="text-xs font-bold text-slate-700 cursor-pointer block select-none">
+                      Mostrar Mural de Avisos
+                    </label>
+                  </div>
+
+                  {/* Toggle Bento Grid */}
+                  <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-lg p-3">
+                    <input
+                      type="checkbox"
+                      id="mostrar_acessos_rapidos"
+                      checked={homeHero.mostrar_acessos_rapidos}
+                      onChange={(e) => setHomeHero({ ...homeHero, mostrar_acessos_rapidos: e.target.checked })}
+                      className="h-4 w-4 text-[#00185f] focus:ring-[#00185f] border-slate-300 rounded cursor-pointer"
+                    />
+                    <label htmlFor="mostrar_acessos_rapidos" className="text-xs font-bold text-slate-700 cursor-pointer block select-none">
+                      Mostrar Acessos Rápidos
+                    </label>
+                  </div>
+
+                  {/* Toggle Turmas */}
+                  <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-lg p-3">
+                    <input
+                      type="checkbox"
+                      id="mostrar_turmas"
+                      checked={homeHero.mostrar_turmas}
+                      onChange={(e) => setHomeHero({ ...homeHero, mostrar_turmas: e.target.checked })}
+                      className="h-4 w-4 text-[#00185f] focus:ring-[#00185f] border-slate-300 rounded cursor-pointer"
+                    />
+                    <label htmlFor="mostrar_turmas" className="text-xs font-bold text-slate-700 cursor-pointer block select-none">
+                      Mostrar Seção de Turmas
+                    </label>
+                  </div>
+                </div>
               </div>
 
-              {/* Title */}
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 uppercase">Título Principal</label>
-                <textarea
-                  rows={2}
-                  value={homeHero.titulo}
-                  onChange={(e) => setHomeHero({ ...homeHero, titulo: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-805 placeholder-slate-400 focus:bg-white focus:border-[#00185f] focus:ring-1 focus:ring-[#00185f] outline-none resize-none"
-                />
+              {/* Secção 2: Textos do Banner Principal (Hero) */}
+              {homeHero.mostrar_hero && (
+                <div className="space-y-4 border-t pt-4">
+                  <h2 className="text-xs font-bold text-[#00185f] uppercase tracking-wider pb-2 flex items-center gap-2">
+                    <Sliders className="h-4 w-4 text-slate-500" />
+                    <span>Textos do Hero Banner</span>
+                  </h2>
+
+                  {/* Badge Text */}
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-700 uppercase">Texto do Badge</label>
+                    <input
+                      type="text"
+                      value={homeHero.badge}
+                      onChange={(e) => setHomeHero({ ...homeHero, badge: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:border-[#00185f] focus:ring-1 focus:ring-[#00185f] outline-none"
+                    />
+                  </div>
+
+                  {/* Title */}
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-700 uppercase">Título Principal</label>
+                    <textarea
+                      rows={2}
+                      value={homeHero.titulo}
+                      onChange={(e) => setHomeHero({ ...homeHero, titulo: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800 focus:bg-white focus:border-[#00185f] focus:ring-1 focus:ring-[#00185f] outline-none resize-none"
+                    />
+                  </div>
+
+                  {/* Paragraph */}
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-700 uppercase">Parágrafo / Descrição</label>
+                    <textarea
+                      rows={4}
+                      value={homeHero.paragrafo}
+                      onChange={(e) => setHomeHero({ ...homeHero, paragrafo: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800 focus:bg-white focus:border-[#00185f] focus:ring-1 focus:ring-[#00185f] outline-none resize-none"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Secção 3: Textos das outras seções */}
+              <div className="space-y-4 border-t pt-4">
+                <h2 className="text-xs font-bold text-[#00185f] uppercase tracking-wider pb-2 flex items-center gap-2">
+                  <Sliders className="h-4 w-4 text-slate-500" />
+                  <span>Títulos das Seções da Home</span>
+                </h2>
+
+                {homeHero.mostrar_acessos_rapidos && (
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-700 uppercase">Título - Acesso Rápido</label>
+                    <input
+                      type="text"
+                      value={homeHero.bento_titulo}
+                      onChange={(e) => setHomeHero({ ...homeHero, bento_titulo: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800 focus:bg-white focus:border-[#00185f] focus:ring-1 focus:ring-[#00185f] outline-none"
+                    />
+                  </div>
+                )}
+
+                {homeHero.mostrar_turmas && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-slate-700 uppercase">Título - Seção de Turmas</label>
+                      <input
+                        type="text"
+                        value={homeHero.turmas_titulo}
+                        onChange={(e) => setHomeHero({ ...homeHero, turmas_titulo: e.target.value })}
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800 focus:bg-white focus:border-[#00185f] focus:ring-1 focus:ring-[#00185f] outline-none"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-slate-700 uppercase">Subtítulo - Seção de Turmas</label>
+                      <input
+                        type="text"
+                        value={homeHero.turmas_subtitulo}
+                        onChange={(e) => setHomeHero({ ...homeHero, turmas_subtitulo: e.target.value })}
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800 focus:bg-white focus:border-[#00185f] focus:ring-1 focus:ring-[#00185f] outline-none"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* Paragraph */}
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 uppercase">Parágrafo / Descrição</label>
-                <textarea
-                  rows={4}
-                  value={homeHero.paragrafo}
-                  onChange={(e) => setHomeHero({ ...homeHero, paragrafo: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-805 placeholder-slate-400 focus:bg-white focus:border-[#00185f] focus:ring-1 focus:ring-[#00185f] outline-none resize-none"
-                />
-              </div>
+              {/* Secção 4: Cards Dinâmicos */}
+              {homeHero.mostrar_acessos_rapidos && (
+                <div className="space-y-4 border-t pt-4">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-xs font-bold text-[#00185f] uppercase tracking-wider flex items-center gap-2">
+                      <Sliders className="h-4 w-4 text-slate-500" />
+                      <span>Cards Dinâmicos (Acesso Rápido - Máx. 5)</span>
+                    </h2>
+                    <button
+                      type="button"
+                      onClick={handleAddCard}
+                      disabled={homeHero.cards_dinamicos.length >= 5}
+                      className="text-xs font-bold text-[#00185f] hover:text-[#bc0100] disabled:opacity-40 flex items-center gap-1 outline-none"
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                      <span>Adicionar Card ({homeHero.cards_dinamicos.length}/5)</span>
+                    </button>
+                  </div>
 
+                  {/* Cards List Editor */}
+                  <div className="space-y-4">
+                    {homeHero.cards_dinamicos.map((card, idx) => (
+                      <div key={idx} className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3 relative">
+                        {/* Remove Card Button */}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveCard(idx)}
+                          className="absolute top-3 right-3 text-slate-400 hover:text-red-600 transition-colors p-1 rounded hover:bg-slate-200"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+
+                        <span className="text-[10px] font-extrabold text-[#00185f] uppercase tracking-wider block">Card #{idx + 1}</span>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {/* Icon selection */}
+                          <div className="space-y-1">
+                            <label className="text-[9px] font-bold text-slate-600 block uppercase">Ícone</label>
+                            <select
+                              value={card.icone_nome}
+                              onChange={(e) => handleCardChange(idx, 'icone_nome', e.target.value)}
+                              className="w-full px-3 py-2 border bg-white rounded-lg text-xs outline-none"
+                            >
+                              {ICON_OPTIONS.map((opt) => (
+                                <option key={opt.value} value={opt.value}>
+                                  {opt.label}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+
+                          {/* Title */}
+                          <div className="space-y-1">
+                            <label className="text-[9px] font-bold text-slate-600 block uppercase">Título</label>
+                            <input
+                              type="text"
+                              required
+                              placeholder="Ex: Editais APP"
+                              value={card.titulo}
+                              onChange={(e) => handleCardChange(idx, 'titulo', e.target.value)}
+                              className="w-full px-3 py-2 border bg-white rounded-lg text-xs outline-none"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {/* Description */}
+                          <div className="space-y-1">
+                            <label className="text-[9px] font-bold text-slate-600 block uppercase">Descrição</label>
+                            <input
+                              type="text"
+                              required
+                              placeholder="Breve resumo informativo..."
+                              value={card.descricao}
+                              onChange={(e) => handleCardChange(idx, 'descricao', e.target.value)}
+                              className="w-full px-3 py-2 border bg-white rounded-lg text-xs outline-none"
+                            />
+                          </div>
+
+                          {/* Link URL */}
+                          <div className="space-y-1">
+                            <label className="text-[9px] font-bold text-slate-600 block uppercase">URL de Destino</label>
+                            <input
+                              type="text"
+                              required
+                              placeholder="Ex: /documentos ou https://..."
+                              value={card.link_url}
+                              onChange={(e) => handleCardChange(idx, 'link_url', e.target.value)}
+                              className="w-full px-3 py-2 border bg-white rounded-lg text-xs outline-none"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    {homeHero.cards_dinamicos.length === 0 && (
+                      <p className="text-xs text-slate-400 font-medium text-center py-6">Adicione ao menos um card de acesso rápido para aparecer no site.</p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Save Button */}
               <button
                 type="button"
                 onClick={handleSaveHomeHero}
                 disabled={isPending}
                 className="w-full bg-[#00185f] hover:bg-[#001144] disabled:opacity-50 text-white text-xs font-bold py-3 rounded-xl transition-all shadow-sm outline-none"
               >
-                {isPending ? 'Salvando...' : 'Salvar Banner Principal'}
+                {isPending ? 'Salvando...' : 'Salvar Configurações da Home'}
               </button>
             </div>
           )}
@@ -330,30 +640,99 @@ export default function PaginasManager({ initialPages }: ManagerProps) {
         {/* RIGHT COLUMN: Live Preview */}
         <div className="space-y-4">
           <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block flex items-center gap-1.5">
-            <Sparkles className="h-4 w-4 text-[#00185f]" />
-            <span>Visualização Rápida (Live Preview)</span>
+            <Eye className="h-4.5 w-4.5 text-[#00185f]" />
+            <span>Visualização da Home (Blocos Ativos)</span>
           </span>
 
           {activeTab === 'home' && (
-            <div className="bg-white border border-slate-200 rounded-2xl shadow-subtle p-8 text-center space-y-4 max-w-lg mx-auto">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-50 border text-slate-600 font-semibold text-[10px] uppercase">
-                <GraduationCap className="h-3.5 w-3.5" />
-                <span>{homeHero.badge || 'Matrículas Abertas'}</span>
-              </div>
-              <h1 className="font-display text-2xl font-extrabold text-primary leading-tight">
-                {homeHero.titulo || 'Bem-vindo'}
-              </h1>
-              <p className="text-slate-500 text-xs font-medium leading-relaxed">
-                {homeHero.paragrafo || 'Descrição...'}
-              </p>
-              <div className="flex gap-2 justify-center pt-2">
-                <span className="bg-secondary text-white text-[11px] font-bold px-4 py-2 rounded">
-                  Conheça a Escola
-                </span>
-                <span className="bg-white text-primary border border-primary text-[11px] font-bold px-4 py-2 rounded">
-                  Fale Conosco
-                </span>
-              </div>
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-6 max-w-lg mx-auto shadow-inner">
+              
+              {/* Preview 1: Hero Banner */}
+              {homeHero.mostrar_hero ? (
+                <div className="bg-white border border-slate-200 rounded-xl p-5 text-center space-y-3 shadow-sm">
+                  <div className="inline-flex items-center gap-1 bg-slate-50 border px-2.5 py-0.5 rounded-full text-[9px] text-[#bc0100] font-bold uppercase">
+                    <GraduationCap className="h-3 w-3" />
+                    <span>{homeHero.badge || 'Matrículas Abertas'}</span>
+                  </div>
+                  <h3 className="font-display text-lg font-extrabold text-[#00185f] leading-snug">
+                    {homeHero.titulo || 'Sem título'}
+                  </h3>
+                  <p className="text-slate-500 text-[11px] font-medium leading-relaxed">
+                    {homeHero.paragrafo || 'Sem parágrafo descriptivo.'}
+                  </p>
+                </div>
+              ) : (
+                <div className="bg-slate-100 border border-dashed border-slate-300 p-4 text-center rounded-xl text-xs text-slate-400 font-semibold select-none">
+                  Hero Banner Ocultado
+                </div>
+              )}
+
+              {/* Preview 2: Mural de Avisos */}
+              {homeHero.mostrar_avisos ? (
+                <div className="bg-[#00185f] text-white border border-indigo-900 rounded-xl p-4 space-y-1 shadow-sm">
+                  <span className="text-[8px] font-extrabold bg-amber-500 text-[#00185f] px-2 py-0.5 rounded uppercase tracking-wider inline-block">
+                    Informativo
+                  </span>
+                  <h4 className="font-bold text-xs">Mural de Destaques & Comunicados</h4>
+                  <p className="text-[10px] text-indigo-200/90 font-medium">Os comunicados e avisos oficiais da escola serão exibidos aqui.</p>
+                </div>
+              ) : (
+                <div className="bg-slate-100 border border-dashed border-slate-300 p-4 text-center rounded-xl text-xs text-slate-400 font-semibold select-none">
+                  Mural de Avisos Ocultado
+                </div>
+              )}
+
+              {/* Preview 3: Bento Grid dynamic cards */}
+              {homeHero.mostrar_acessos_rapidos ? (
+                <div className="space-y-3 bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+                  <h4 className="font-bold text-xs text-[#00185f] border-b pb-1.5 uppercase tracking-wider select-none">
+                    {homeHero.bento_titulo || 'Acesso Rápido'}
+                  </h4>
+                  <div className="grid grid-cols-1 gap-2">
+                    {homeHero.cards_dinamicos.map((card, idx) => {
+                      const IconComponent = ICON_MAP[card.icone_nome] || HelpCircle;
+                      return (
+                        <div key={idx} className="flex items-center gap-3 p-2 bg-slate-50 border border-slate-100 rounded-lg text-left">
+                          <div className="p-2 bg-white rounded-lg text-[#bc0100] border shrink-0">
+                            <IconComponent className="h-4 w-4" />
+                          </div>
+                          <div className="truncate">
+                            <span className="font-bold text-xs text-slate-800 block leading-tight">{card.titulo || 'Card sem título'}</span>
+                            <span className="text-[9px] text-slate-450 block truncate max-w-[200px] font-medium">{card.descricao || 'Sem descrição'}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    {homeHero.cards_dinamicos.length === 0 && (
+                      <p className="text-[10px] text-slate-400 font-medium text-center">Nenhum card cadastrado.</p>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-slate-100 border border-dashed border-slate-300 p-4 text-center rounded-xl text-xs text-slate-400 font-semibold select-none">
+                  Acessos Rápidos Ocultados
+                </div>
+              )}
+
+              {/* Preview 4: Turmas */}
+              {homeHero.mostrar_turmas ? (
+                <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm space-y-2">
+                  <div className="text-left border-b pb-1.5">
+                    <h4 className="font-bold text-xs text-[#00185f]">{homeHero.turmas_titulo || 'Turmas'}</h4>
+                    <p className="text-[9px] text-slate-400 font-medium leading-none mt-0.5">{homeHero.turmas_subtitulo || 'Subtítulo'}</p>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-center text-[10px] font-bold">
+                    <span className="bg-slate-50 border p-1 rounded text-slate-600">6º ao 9º Ano</span>
+                    <span className="bg-slate-50 border p-1 rounded text-slate-600">Ensino Médio</span>
+                    <span className="bg-slate-50 border p-1 rounded text-slate-600">Apoio</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-slate-100 border border-dashed border-slate-300 p-4 text-center rounded-xl text-xs text-slate-400 font-semibold select-none">
+                  Seção de Turmas Ocultada
+                </div>
+              )}
+
             </div>
           )}
 

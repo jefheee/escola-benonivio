@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import { useFormState, useFormStatus } from 'react-dom';
 import { Plus, Search, Edit2, Trash2, X, AlertCircle, CheckCircle2, Eye, Star, Megaphone } from 'lucide-react';
 import { EscolaAviso, saveAviso, deleteAviso, toggleAvisoDestaque, toggleAvisoPublicado } from '../actions';
+import ImageCropper from '@/components/admin/image-cropper';
 
 interface ManagerProps {
   initialNotices: EscolaAviso[];
@@ -327,16 +328,23 @@ export default function AvisosManager({ initialNotices }: ManagerProps) {
                 />
               </div>
 
-              {/* Image URL input */}
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">URL da Imagem de Destaque (Opcional)</label>
+              {/* Image Cropper & Uploader */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">Imagem do Aviso (Cortada Retrato 3:4)</label>
+                <ImageCropper
+                  onUploadSuccess={(url) => {
+                    setPreviewImagemUrl(url);
+                    showFeedback('success', 'Imagem enviada com sucesso!');
+                  }}
+                  aspectRatio={3 / 4}
+                  bucketName="escola_midias"
+                  folderName="banners"
+                  label="Selecionar Imagem"
+                />
                 <input
+                  type="hidden"
                   name="imagem_url"
-                  type="url"
-                  placeholder="https://exemplo.com/foto.jpg"
                   value={previewImagemUrl}
-                  onChange={(e) => setPreviewImagemUrl(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800 focus:bg-white focus:border-[#00185f] focus:ring-1 focus:ring-[#00185f] outline-none transition-all"
                 />
               </div>
 

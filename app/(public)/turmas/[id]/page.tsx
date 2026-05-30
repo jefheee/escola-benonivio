@@ -155,6 +155,31 @@ export default async function TurmaDetailPage({ params }: PageProps) {
                         {post.conteudo}
                       </p>
                     )}
+
+                    {post.imagem_url && (
+                      <div className="mt-3 rounded-xl overflow-hidden border border-slate-100 max-h-[350px] w-full flex justify-center bg-slate-50">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={post.imagem_url}
+                          alt={post.titulo}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+
+                    {post.link_referencia && (
+                      <div className="mt-3">
+                        <a
+                          href={post.link_referencia}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-xs font-bold text-[#00185f] hover:text-secondary bg-slate-50 hover:bg-slate-100 border border-slate-200 px-3.5 py-2 rounded-lg transition-colors outline-none"
+                        >
+                          <Link2 className="h-3.5 w-3.5" />
+                          <span>Acessar Link Anexo</span>
+                        </a>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))

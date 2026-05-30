@@ -21,6 +21,8 @@ export interface EscolaTurmaPostPublic {
   titulo: string;
   conteudo: string | null;
   anexos: string[] | null;
+  imagem_url: string | null;
+  link_referencia: string | null;
   created_at: string;
 }
 
@@ -82,7 +84,7 @@ export const getTurmaPostsPublic = unstable_cache(
   async (turmaId: string) => {
     const { data, error } = await supabasePublic
       .from('escola_turmas_posts')
-      .select('id, turma_id, titulo, conteudo, anexos, created_at')
+      .select('id, turma_id, titulo, conteudo, anexos, imagem_url, link_referencia, created_at')
       .eq('turma_id', turmaId)
       .order('created_at', { ascending: false });
 

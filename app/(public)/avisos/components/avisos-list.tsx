@@ -20,10 +20,10 @@ export default function AvisosList({ initialAvisos }: AvisosListProps) {
             <div
               key={aviso.id}
               onClick={() => setSelectedAviso(aviso)}
-              className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-subtle flex flex-col justify-between cursor-pointer group hover:border-[#00185f] hover:shadow-md transition-all h-[400px] relative"
+              className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-subtle flex flex-col justify-between cursor-pointer group hover:border-[#00185f] hover:shadow-md transition-all h-auto relative"
             >
               {/* Card Image */}
-              <div className="h-44 bg-slate-50 relative shrink-0 overflow-hidden flex items-center justify-center border-b border-slate-100">
+              <div className="aspect-[3/4] bg-slate-50 relative shrink-0 overflow-hidden flex items-center justify-center border-b border-slate-100">
                 {aviso.imagem_url ? (
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img

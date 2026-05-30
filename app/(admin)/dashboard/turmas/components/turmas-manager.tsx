@@ -2,8 +2,9 @@
 
 import { useState, useTransition } from 'react';
 import { useFormState, useFormStatus } from 'react-dom';
-import { Plus, Search, Edit2, Trash2, X, AlertCircle, CheckCircle2, MessageSquare, Megaphone, Link as LinkIcon, Trash } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, X, AlertCircle, CheckCircle2, MessageSquare, Megaphone, Link as LinkIcon } from 'lucide-react';
 import { EscolaTurma, EscolaTurmaPost, saveTurma, deleteTurma, getPostsAdmin, savePost, deletePost } from '../actions';
+import ImageCropper from '@/components/admin/image-cropper';
 
 interface ManagerProps {
   initialTurmas: EscolaTurma[];
@@ -22,8 +23,6 @@ export default function TurmasManager({ initialTurmas }: ManagerProps) {
   
   // Custom links state for the active form
   const [outrosLinks, setOutrosLinks] = useState<{ titulo: string; url: string }[]>([]);
-  const [newLinkTitulo, setNewLinkTitulo] = useState('');
-  const [newLinkUrl, setNewLinkUrl] = useState('');
 
   // Posts Feed state for a selected class
   const [selectedTurmaForPosts, setSelectedTurmaForPosts] = useState<EscolaTurma | null>(null);
@@ -31,6 +30,8 @@ export default function TurmasManager({ initialTurmas }: ManagerProps) {
   const [isPostFormOpen, setIsPostFormOpen] = useState(false);
   const [newPostTitulo, setNewPostTitulo] = useState('');
   const [newPostConteudo, setNewPostConteudo] = useState('');
+  const [postImagemUrl, setPostImagemUrl] = useState('');
+  const [postLinkReferencia, setPostLinkReferencia] = useState('');
 
   const [, startTransition] = useTransition();
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -60,11 +61,15 @@ export default function TurmasManager({ initialTurmas }: ManagerProps) {
   const [postFormState, postFormAction] = useFormState(async (state: unknown, formData: FormData) => {
     if (!selectedTurmaForPosts) return { error: 'Turma não selecionada.', success: false };
     formData.append('turma_id', selectedTurmaForPosts.id);
+    formData.append('imagem_url', postImagemUrl);
+    formData.append('link_referencia', postLinkReferencia);
     const res = await savePost(state, formData);
     if (res.success) {
       setIsPostFormOpen(false);
       setNewPostTitulo('');
       setNewPostConteudo('');
+      setPostImagemUrl('');
+      setPostLinkReferencia('');
       showFeedback('success', 'Recado publicado com sucesso!');
       // Refresh posts list
       const freshPosts = await getPostsAdmin(selectedTurmaForPosts.id);
@@ -78,24 +83,13 @@ export default function TurmasManager({ initialTurmas }: ManagerProps) {
   const handleOpenAddTurma = () => {
     setEditingTurma(null);
     setOutrosLinks([]);
-    setNewLinkTitulo('');
-    setNewLinkUrl('');
     setIsTurmaModalOpen(true);
   };
 
   const handleOpenEditTurma = (turma: EscolaTurma) => {
     setEditingTurma(turma);
     setOutrosLinks(turma.outros_links || []);
-    setNewLinkTitulo('');
-    setNewLinkUrl('');
     setIsTurmaModalOpen(true);
-  };
-
-  const handleAddLink = () => {
-    if (!newLinkTitulo || !newLinkUrl) return;
-    setOutrosLinks([...outrosLinks, { titulo: newLinkTitulo, url: newLinkUrl }]);
-    setNewLinkTitulo('');
-    setNewLinkUrl('');
   };
 
   const handleRemoveLink = (index: number) => {
@@ -382,53 +376,60 @@ export default function TurmasManager({ initialTurmas }: ManagerProps) {
                 />
               </div>
 
-              {/* Outros Links (JSONB manager) */}
+              {/* Outros Links (JSONB manager - Field Array) */}
               <div className="space-y-3 pt-2 border-t border-slate-100">
-                <label className="text-xs font-bold text-slate-700 uppercase block">Links de Recursos Extras (Opcional)</label>
-                
-                {/* Addition controls */}
-                <div className="grid grid-cols-2 gap-3">
-                  <input
-                    type="text"
-                    placeholder="Título (Ex: Roteiro de Estudos)"
-                    value={newLinkTitulo}
-                    onChange={(e) => setNewLinkTitulo(e.target.value)}
-                    className="px-3.5 py-2 border border-slate-200 rounded-lg text-xs"
-                  />
-                  <div className="flex gap-2">
-                    <input
-                      type="url"
-                      placeholder="URL (https://...)"
-                      value={newLinkUrl}
-                      onChange={(e) => setNewLinkUrl(e.target.value)}
-                      className="flex-1 px-3.5 py-2 border border-slate-200 rounded-lg text-xs"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleAddLink}
-                      className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 rounded-lg text-xs"
-                    >
-                      Adicionar
-                    </button>
-                  </div>
+                <div className="flex justify-between items-center">
+                  <label className="text-xs font-bold text-slate-700 uppercase block">Links de Recursos Extras (Opcional)</label>
+                  <button
+                    type="button"
+                    onClick={() => setOutrosLinks([...outrosLinks, { titulo: '', url: '' }])}
+                    className="text-[#00185f] hover:text-[#001144] font-bold text-xs flex items-center gap-1"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    <span>Adicionar Link</span>
+                  </button>
                 </div>
 
-                {/* List of links */}
-                <div className="space-y-2 max-h-24 overflow-y-auto">
-                  {outrosLinks.map((link, idx) => (
-                    <div key={idx} className="flex items-center justify-between bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs">
-                      <div className="truncate pr-4">
-                        <strong className="text-[#00185f]">{link.titulo}:</strong> <span className="text-slate-500">{link.url}</span>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {outrosLinks.length > 0 ? (
+                    outrosLinks.map((link, idx) => (
+                      <div key={idx} className="flex gap-2 items-center bg-slate-50 border border-slate-100 p-2.5 rounded-lg">
+                        <input
+                          type="text"
+                          required
+                          placeholder="Título (Ex: Roteiro)"
+                          value={link.titulo}
+                          onChange={(e) => {
+                            const updated = [...outrosLinks];
+                            updated[idx].titulo = e.target.value;
+                            setOutrosLinks(updated);
+                          }}
+                          className="w-1/3 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
+                        />
+                        <input
+                          type="url"
+                          required
+                          placeholder="URL (https://...)"
+                          value={link.url}
+                          onChange={(e) => {
+                            const updated = [...outrosLinks];
+                            updated[idx].url = e.target.value;
+                            setOutrosLinks(updated);
+                          }}
+                          className="flex-grow px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveLink(idx)}
+                          className="p-1 text-red-500 hover:text-red-700 rounded-lg transition-colors hover:bg-red-50"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveLink(idx)}
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        <Trash className="h-4 w-4" />
-                      </button>
-                    </div>
-                  ))}
+                    ))
+                  ) : (
+                    <p className="text-xs text-slate-400 font-medium py-1">Nenhum recurso extra adicionado.</p>
+                  )}
                 </div>
               </div>
 
@@ -510,6 +511,33 @@ export default function TurmasManager({ initialTurmas }: ManagerProps) {
                     />
                   </div>
 
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-655 uppercase block">Link de Referência / Anexo (Opcional)</label>
+                    <input
+                      name="link_referencia"
+                      type="url"
+                      placeholder="https://exemplo.com/material"
+                      value={postLinkReferencia}
+                      onChange={(e) => setPostLinkReferencia(e.target.value)}
+                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs outline-none"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-655 uppercase block">Imagem do Recado (Opcional - Cortada 16:9)</label>
+                    <ImageCropper
+                      onUploadSuccess={(url) => {
+                        setPostImagemUrl(url);
+                        showFeedback('success', 'Imagem do recado carregada!');
+                      }}
+                      aspectRatio={16 / 9}
+                      bucketName="escola_midias"
+                      folderName="posts"
+                      label="Selecionar Foto"
+                    />
+                    <input type="hidden" name="imagem_url" value={postImagemUrl} />
+                  </div>
+
                   <SubmitButton label="Publicar no Mural" />
                 </form>
               </div>
@@ -544,6 +572,18 @@ export default function TurmasManager({ initialTurmas }: ManagerProps) {
                         </div>
                         <h5 className="font-bold text-[#00185f] text-sm leading-snug">{post.titulo}</h5>
                         <p className="text-slate-600 text-xs leading-relaxed whitespace-pre-wrap">{post.conteudo}</p>
+                        {post.imagem_url && (
+                          <div className="mt-2 rounded-lg overflow-hidden border border-slate-100 max-h-32">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={post.imagem_url} alt={post.titulo} className="w-full h-full object-cover" />
+                          </div>
+                        )}
+                        {post.link_referencia && (
+                          <div className="mt-1 flex items-center gap-1 text-[11px] font-bold text-[#00185f] hover:underline">
+                            <LinkIcon className="h-3 w-3" />
+                            <a href={post.link_referencia} target="_blank" rel="noopener noreferrer" className="truncate max-w-[200px]">{post.link_referencia}</a>
+                          </div>
+                        )}
                       </div>
                     ))
                   ) : (
