@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# **🏫 Portal Escolar EEB Professor Benonívio João Martins**
 
-## Getting Started
+Bem-vindo ao repositório oficial do novo ecossistema digital da **E.E.B. Professor Benonívio João Martins**, localizada em Palhoça/SC.
 
-First, run the development server:
+Este projeto foi construído para modernizar a comunicação da escola, substituindo sistemas legados por uma plataforma rápida, responsiva e de fácil gestão para a equipe escolar.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## **🎯 Visão Geral do Projeto**
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+A plataforma é dividida em dois universos distintos para garantir segurança, performance e melhor experiência do usuário:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Portal Público:** Voltado para alunos, pais e comunidade. Focado em velocidade e acessibilidade, onde os usuários podem consultar o histórico da escola, acessar documentos públicos, ver os avisos recentes e encontrar rapidamente os canais de contato de cada turma.  
+2. **Dashboard Administrativo:** Uma área restrita e segura, desenhada especificamente para a equipe da secretaria e direção. Permite a gestão completa do conteúdo do site de forma visual, sem necessidade de conhecimento técnico.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## **🏗️ Arquitetura e Funcionalidades**
 
-## Learn More
+O projeto utiliza o **Next.js App Router** e está estruturado através de *Route Groups* para isolar completamente a lógica e o layout da área pública da área administrativa.
 
-To learn more about Next.js, take a look at the following resources:
+### **🌐 Área Pública (app/(public))**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+* **Home:** Visão geral da escola, atalhos rápidos e destaques institucionais.  
+* **Avisos:** Mural digital de comunicados importantes para a comunidade escolar.  
+* **Sobre:** Informações institucionais, dados do Censo Escolar, localização e a biografia do Patrono.  
+* **Acervo:** Resgate da memória da escola, com galerias de fotos históricas e projetos passados.  
+* **Documentos:** Repositório de arquivos públicos (Editais, Atas, Guias de Estudo) disponíveis para download direto.  
+* **Turmas:** Mapeamento organizado para facilitar o acesso aos grupos de comunicação de cada série.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### **🔒 Área Administrativa (app/(admin))**
 
-## Deploy on Vercel
+Acesso protegido por autenticação (Supabase) via Middleware. O painel inclui gerenciadores (CRUDs) intuitivos para:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+* **Gerenciador de Avisos:** Criação e edição de comunicados na página inicial.  
+* **Gerenciador de Documentos:** Upload e organização de arquivos (PDFs, Docx).  
+* **Gerenciador de Notificações:** Controle de alertas do sistema.  
+* **Gerenciador de Páginas:** Controle de conteúdo dinâmico.  
+* **Gerenciador de Turmas:** Atualização rápida de links de WhatsApp e informações das turmas.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## **🛠️ Tecnologias Utilizadas**
+
+* **Framework:** Next.js (App Router)  
+* **Linguagem:** TypeScript  
+* **Estilização e UI:** Tailwind CSS, Radix UI / shadcn/ui (Componentes)  
+* **Banco de Dados & Autenticação:** Supabase (PostgreSQL, Auth SSR)  
+* **Animações e Scroll:** Framer Motion, Lenis (Smooth Scroll)  
+* **Gerenciamento de Estado/Dados:** React Query / Next Server Actions
+
+## **🔗 Deploy**
+
+A plataforma está hospedada na Vercel, aproveitando ao máximo as capacidades de renderização Edge e Serverless do Next.js.
+
+**Acesse o site em produção:** [https://escolabenonivio.vercel.app](https://escolabenonivio.vercel.app)
+
+## **⚖️ Conformidade e Privacidade**
+
+Este portal foi concebido respeitando as normas da **LGPD** e as diretrizes de proteção a menores. Funcionalidades que exigem manipulação de dados sensíveis de alunos são sempre delegadas e redirecionadas para os sistemas oficiais do Governo do Estado de Santa Catarina (SED/SC).
