@@ -2,14 +2,14 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { 
-  History as HistoryIcon, 
-  BookOpen, 
-  Users, 
-  MapPin, 
-  FileText, 
-  Download, 
-  ExternalLink, 
+import {
+  History as HistoryIcon,
+  BookOpen,
+  Users,
+  MapPin,
+  FileText,
+  Download,
+  ExternalLink,
   Image as ImageIcon,
   ChevronLeft,
   ChevronRight,
@@ -46,7 +46,7 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
     const keywords = ['app', 'ata', 'edital', 'prestação de contas', 'prestaçao de contas', 'conselho', 'regulamento', 'grêmio', 'gremio'];
     const isPpp = title.includes('ppp') || cat.includes('ppp');
     const isCardapio = title.includes('cardápio') || title.includes('cardapio') || cat.includes('cardápio') || cat.includes('cardapio');
-    
+
     return !isPpp && !isCardapio && (
       keywords.some(kw => title.includes(kw) || cat.includes(kw)) ||
       (!cat && !title.includes('ppp')) ||
@@ -82,7 +82,7 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
                   <span>Nossa História (O Brejaru)</span>
                 </h3>
                 <p className="text-slate-600 font-medium leading-relaxed">
-                  Fundada gradativamente nos anos 80 e formalizada pela <span className="font-bold text-slate-900">Portaria Nº 47 de 1984</span>, a escola cresceu lado a lado com a urbanização e estruturação da comunidade Frei Damião e arredores. 
+                  Fundada gradativamente nos anos 80 e formalizada pela <span className="font-bold text-slate-900">Portaria Nº 47 de 1984</span>, a escola cresceu lado a lado com a urbanização e estruturação da comunidade Frei Damião e arredores.
                 </p>
                 <p className="text-slate-600 font-medium leading-relaxed">
                   Como a primeira grande presença do Estado na região do Brejaru, a E.E.B. Professor Benonívio João Martins atuou historicamente não apenas como local de ensino, mas como um verdadeiro vetor de mobilidade social, proteção coletiva e centro de cidadania. A escola orgulha-se de ter caminhado ao lado de lutas históricas da comunidade, simbolizadas em marcos como a Carta do Brejaru.
@@ -123,7 +123,7 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
                 <p className="text-sm text-slate-500 font-medium max-w-3xl">
                   Registros fotográficos restaurados que contam momentos marcantes da escola e da comunidade ao longo das últimas décadas. Clique em um álbum para navegar.
                 </p>
-                
+
                 <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
                   {fotosHistoricas.map((item) => {
                     const firstImage = (item.imagens && item.imagens.length > 0) ? item.imagens[0] : null;
@@ -183,7 +183,7 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
                   <span>Proposta Pedagógica & PPP</span>
                 </h3>
                 <p className="text-slate-655 font-medium leading-relaxed text-sm sm:text-base">
-                  O **Projeto Político Pedagógico (PPP)** é a identidade viva da escola. Ele estabelece diretrizes, compromissos e metas de ensino com foco na inclusão social, no protagonismo juvenil e na formação cidadã. Nossas ações didáticas visam o pleno desenvolvimento humano dos estudantes e a inserção ativa no mundo do trabalho e nas universidades.
+                  O Projeto Político Pedagógico (PPP) é a identidade viva da escola. Ele estabelece diretrizes, compromissos e metas de ensino com foco na inclusão social, no protagonismo juvenil e na formação cidadã. Nossas ações didáticas visam o pleno desenvolvimento humano dos estudantes e a inserção ativa no mundo do trabalho e nas universidades.
                 </p>
                 <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-3">
                   <span className="text-[10px] font-extrabold text-slate-500 uppercase block">Inovação e Reconhecimento</span>
@@ -277,7 +277,7 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
                   <span>Gestão Democrática e Colegiada</span>
                 </h3>
                 <p className="text-slate-655 font-medium leading-relaxed text-sm">
-                  Na EEB Professor Benonívio João Martins, a tomada de decisões é compartilhada. A **Associação de Pais e Professores (APP)** coordena o conselho comunitário, atuando ativamente na aplicação transparente das verbas e na manutenção predial e pedagógica. Além disso, o **Conselho Deliberativo** garante assembleias democráticas mensais para planejamento.
+                  Na EEB Professor Benonívio João Martins, a tomada de decisões é compartilhada. A Associação de Pais e Professores (APP) coordena o conselho comunitário, atuando ativamente na aplicação transparente das verbas e na manutenção predial e pedagógica. Além disso, o Conselho Deliberativo garante assembleias democráticas mensais para planejamento.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="border border-slate-200 p-4 rounded-xl space-y-1">
@@ -327,7 +327,7 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
               <p className="text-xs text-slate-500 font-medium">
                 Transparência total na aplicação de recursos. Confira os relatórios emitidos pela APP e pela secretaria.
               </p>
-              
+
               {orgDocs.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {orgDocs.map(doc => (
@@ -383,7 +383,7 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
                 <span>Infraestrutura & Ambientes</span>
               </h3>
               <p className="text-slate-655 font-medium leading-relaxed text-sm">
-                Revitalizada estruturalmente de forma ampla em 2007 (investimento estadual superior a R$ 1 milhão), a escola Professor Benonívio João Martins conta com uma estrutura completa de salas amplas e arejadas para atender cerca de **1.300 alunos** em três turnos letivos:
+                Revitalizada estruturalmente de forma ampla em 2007 (investimento estadual superior a R$ 1 milhão), a escola Professor Benonívio João Martins conta com uma estrutura completa de salas amplas e arejadas para atender cerca de 1.300 alunos em três turnos letivos:
               </p>
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-semibold text-slate-600">
                 <li className="flex items-start gap-2.5 p-3.5 bg-slate-50 border rounded-xl">
@@ -391,7 +391,7 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
                     <CheckCircle className="h-3.5 w-3.5" />
                   </div>
                   <div>
-                    <span className="text-slate-900 font-bold block">Quadra Poliesportiva Coberta</span>
+                    <span className="text-slate-900 font-bold block">Quadra Poliesportiva</span>
                     <span>Espaço dedicado às aulas de educação física e competições esportivas regionais.</span>
                   </div>
                 </li>
@@ -437,15 +437,15 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
                     CEP: {SCHOOL_INFO.address.zipCode}
                   </p>
                 </div>
-                
+
                 <div className="w-full h-44 rounded-2xl overflow-hidden border border-slate-200 shadow-inner">
-                  <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1767.54989144233!2d-48.667191048476354!3d-27.621426117409058!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9527358fbaaaaaab%3A0xa4a4e87166b392b7!2sEeb%20Prof%20Benonivio%20Joao%20Martins!5e0!3m2!1spt-BR!2sbr!4v1779936658693!5m2!1spt-BR!2sbr" 
-                    width="100%" 
-                    height="100%" 
-                    style={{ border: 0 }} 
-                    allowFullScreen 
-                    loading="lazy" 
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1767.54989144233!2d-48.667191048476354!3d-27.621426117409058!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9527358fbaaaaaab%3A0xa4a4e87166b392b7!2sEeb%20Prof%20Benonivio%20Joao%20Martins!5e0!3m2!1spt-BR!2sbr!4v1779936658693!5m2!1spt-BR!2sbr"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
                     title="Mapa da Escola"
                   ></iframe>
@@ -463,11 +463,10 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
       <div className="flex flex-wrap justify-center border-b border-slate-200 pb-2 gap-2">
         <button
           onClick={() => setActiveTab('historico')}
-          className={`flex items-center gap-2 px-5 py-3 border-b-2 font-bold text-xs uppercase tracking-wider outline-none transition-all ${
-            activeTab === 'historico'
-              ? 'border-slate-800 text-slate-900 bg-slate-50'
-              : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50/50'
-          }`}
+          className={`flex items-center gap-2 px-5 py-3 border-b-2 font-bold text-xs uppercase tracking-wider outline-none transition-all ${activeTab === 'historico'
+            ? 'border-slate-800 text-slate-900 bg-slate-50'
+            : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50/50'
+            }`}
         >
           <HistoryIcon className="h-4 w-4 shrink-0" />
           <span>História & Patrono</span>
@@ -475,11 +474,10 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
 
         <button
           onClick={() => setActiveTab('ppp')}
-          className={`flex items-center gap-2 px-5 py-3 border-b-2 font-bold text-xs uppercase tracking-wider outline-none transition-all ${
-            activeTab === 'ppp'
-              ? 'border-slate-800 text-slate-900 bg-slate-50'
-              : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50/50'
-          }`}
+          className={`flex items-center gap-2 px-5 py-3 border-b-2 font-bold text-xs uppercase tracking-wider outline-none transition-all ${activeTab === 'ppp'
+            ? 'border-slate-800 text-slate-900 bg-slate-50'
+            : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50/50'
+            }`}
         >
           <BookOpen className="h-4 w-4 shrink-0" />
           <span>PPP & Proposta</span>
@@ -487,11 +485,10 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
 
         <button
           onClick={() => setActiveTab('organizacao')}
-          className={`flex items-center gap-2 px-5 py-3 border-b-2 font-bold text-xs uppercase tracking-wider outline-none transition-all ${
-            activeTab === 'organizacao'
-              ? 'border-slate-800 text-slate-900 bg-slate-50'
-              : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50/50'
-          }`}
+          className={`flex items-center gap-2 px-5 py-3 border-b-2 font-bold text-xs uppercase tracking-wider outline-none transition-all ${activeTab === 'organizacao'
+            ? 'border-slate-800 text-slate-900 bg-slate-50'
+            : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50/50'
+            }`}
         >
           <Users className="h-4 w-4 shrink-0" />
           <span>Organização Escolar</span>
@@ -499,11 +496,10 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
 
         <button
           onClick={() => setActiveTab('ambientes')}
-          className={`flex items-center gap-2 px-5 py-3 border-b-2 font-bold text-xs uppercase tracking-wider outline-none transition-all ${
-            activeTab === 'ambientes'
-              ? 'border-slate-800 text-slate-900 bg-slate-50'
-              : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50/50'
-          }`}
+          className={`flex items-center gap-2 px-5 py-3 border-b-2 font-bold text-xs uppercase tracking-wider outline-none transition-all ${activeTab === 'ambientes'
+            ? 'border-slate-800 text-slate-900 bg-slate-50'
+            : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50/50'
+            }`}
         >
           <MapPin className="h-4 w-4 shrink-0" />
           <span>Ambientes & Estrutura</span>
@@ -519,7 +515,7 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
       {selectedPhotoItem && (
         <div className="fixed inset-0 z-[150] bg-black/85 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl border border-slate-100 shadow-2xl w-full max-w-3xl overflow-hidden max-h-[90vh] flex flex-col text-left animate-scaleIn">
-            
+
             {/* Modal Image Slider */}
             {selectedPhotoItem.imagens && selectedPhotoItem.imagens.length > 0 ? (
               <div className="h-72 sm:h-[420px] bg-slate-950 relative shrink-0 overflow-hidden flex items-center justify-center select-none">
