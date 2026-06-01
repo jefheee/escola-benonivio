@@ -20,9 +20,8 @@ export const SCHOOL_INFO = {
 
 export const NAV_ITEMS = [
   { label: "Início", href: "/" },
-  { label: "Avisos", href: "/avisos" },
-  { label: "Turmas", href: "/turmas" },
-  { label: "Sobre", href: "/sobre" },
-  { label: "Acervo", href: "/acervo" },
-  { label: "Documentos", href: "/documentos" }
+  { label: "Sobre a Escola", href: "/sobre" },
+  { label: "Mural de Avisos", href: "/avisos" },
+  { label: "Nossas Turmas", href: "/turmas" },
+  { label: "Acervo Digital", href: "/acervo" }
 ] as const;

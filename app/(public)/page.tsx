@@ -17,6 +17,7 @@ import { getAvisosDestaqueHome } from "@/lib/data/avisos";
 import { getPaginaConteudoPublic } from "@/lib/data/paginas";
 import AvisosCarousel from "@/components/features/avisos-carousel";
 import WhatsAppTrigger from "@/components/features/whatsapp-trigger";
+import ServicosGrid from "./components/servicos-grid";
 
 export const dynamic = 'force-dynamic';
 
@@ -65,7 +66,7 @@ const DEFAULT_HOME_HERO: HomeHeroSettings = {
   turmas_titulo: 'Nossas Turmas',
   turmas_subtitulo: 'Estrutura curricular completa do básico ao avançado.',
   cards_dinamicos: [
-    { icone_nome: "FileText", titulo: "Editais APP", descricao: "Consulte documentos, editais e publicações oficiais da Associação.", link_url: "/documentos" },
+    { icone_nome: "FileText", titulo: "Editais APP", descricao: "Consulte documentos, editais e publicações oficiais da Associação.", link_url: "/sobre" },
     { icone_nome: "PhoneCall", titulo: "Contato", descricao: "Fale com a secretaria, direção ou coordenação pedagógica via WhatsApp.", link_url: "#contato" },
     { icone_nome: "History", titulo: "Histórico", descricao: "Conheça a trajetória, o patrono e os valores da nossa instituição.", link_url: "/sobre" }
   ]
@@ -151,6 +152,9 @@ export default async function Home() {
           <AvisosCarousel avisos={featuredNotices} />
         </section>
       )}
+
+      {/* Centralized State Government Services Grid */}
+      <ServicosGrid />
 
       {/* Quick Access (Bento Style Cards from CMS) */}
       {heroContent.mostrar_acessos_rapidos && cards.length > 0 && (
