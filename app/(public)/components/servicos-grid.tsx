@@ -2,15 +2,15 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { 
-  GraduationCap, 
-  UserPlus, 
-  ShieldCheck, 
-  Utensils, 
-  X, 
-  Info, 
-  CheckCircle, 
-  ExternalLink 
+import {
+  GraduationCap,
+  UserPlus,
+  ShieldCheck,
+  Utensils,
+  X,
+  Info,
+  CheckCircle,
+  ExternalLink
 } from 'lucide-react';
 
 export default function ServicosGrid() {
@@ -30,7 +30,7 @@ export default function ServicosGrid() {
 
       {/* Grid List */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        
+
         {/* Card 1: Estudante Online */}
         <a
           href="https://estudanteonline.sed.sc.gov.br/"
@@ -172,7 +172,7 @@ export default function ServicosGrid() {
                   <div className="space-y-1">
                     <h4 className="font-bold text-slate-900 text-sm">Etapa 1: Inscrição Online no Portal do Estado</h4>
                     <p className="text-slate-500 text-xs font-semibold leading-relaxed">
-                      O responsável deve acessar o portal de matrículas da SED/SC usando os dados da conta unificada **gov.br**. Selecione a cidade de **Palhoça** e a unidade **EEB Professor Benonívio João Martins** para efetuar a pré-matrícula no período determinado pelo cronograma estadual.
+                      O responsável deve acessar o portal oficial Matrícula Online SED/SC utilizando os dados de acesso da conta unificada gov.br. No sistema, selecione a cidade de Palhoça e a unidade EEB Professor Benonívio João Martins para efetuar a pré-matrícula conforme os prazos estipulados pelo cronograma estadual.
                     </p>
                   </div>
                 </div>
@@ -185,7 +185,7 @@ export default function ServicosGrid() {
                   <div className="space-y-1">
                     <h4 className="font-bold text-slate-900 text-sm">Etapa 2: Validação Física na Secretaria (Presencial)</h4>
                     <p className="text-slate-500 text-xs font-semibold leading-relaxed">
-                      Após a confirmação online da vaga, compareça presencialmente à secretaria da escola no bairro **Brejaru I** para entregar e assinar a documentação física original necessária (RG/CPF do aluno e responsável, comprovante de residência, histórico letivo e cartão de vacinação atualizado).
+                      Após a confirmação ou sorteio da vaga pelo sistema online, o responsável deve comparecer presencialmente à secretaria da escola. É necessário entregar as cópias e apresentar os documentos físicos originais para assinar e efetivar a vaga.
                     </p>
                   </div>
                 </div>
@@ -205,19 +205,19 @@ export default function ServicosGrid() {
                   </li>
                   <li className="flex items-center gap-1.5">
                     <CheckCircle className="h-4 w-4 text-slate-800 shrink-0" />
-                    <span>Histórico Escolar</span>
+                    <span>Histórico Escolar completo ou Atestado de Frequência atualizado</span>
                   </li>
                   <li className="flex items-center gap-1.5">
                     <CheckCircle className="h-4 w-4 text-slate-800 shrink-0" />
-                    <span>Cartão de Vacina</span>
+                    <span>Certidão de Nascimento do aluno</span>
                   </li>
                   <li className="flex items-center gap-1.5">
                     <CheckCircle className="h-4 w-4 text-slate-800 shrink-0" />
-                    <span>Comprovante Residencial</span>
+                    <span>Comprovante de Residência atualizado (fatura de água, luz ou telefone de até 3 meses)</span>
                   </li>
                   <li className="flex items-center gap-1.5">
                     <CheckCircle className="h-4 w-4 text-slate-800 shrink-0" />
-                    <span>Tipo Sanguíneo do aluno</span>
+                    <span>Caderneta de Vacinação acompanhada da Declaração de Vacina Atualizada emitida pelo posto de saúde (SUS)</span>
                   </li>
                 </ul>
               </div>
