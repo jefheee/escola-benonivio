@@ -1,8 +1,13 @@
 # 📌 CONTEXTO ATUAL DO PROJETO - EEB PROFESSOR BENONÍVIO JOÃO MARTINS
 
 **Última Atualização:** 10 de Agosto de 2026  
-**Status do Projeto:** Em Desenvolvimento Ativo / Fase de Consolidação e SEO  
+**Status do Projeto:** Em Desenvolvimento Ativo / Histórico Git Resetado e Blindado / SEO & Acervo Concluídos  
 **Arquitetura:** Docs as Code (Fonte de Verdade)
+
+---
+
+## 🚨 REGRA ABSOLUTA DE WORKSPACE (`.agents/rules.md` & `.agents/AGENTS.md`)
+> **REGRA ABSOLUTA:** Toda e qualquer alteração de código ou arquitetura neste projeto exige que você leia, atualize e valide o arquivo `docs/Projeto_Escola_Benonivio/04_Logs/CONTEXTO_ATUAL.md`. O padrão do projeto é 'Docs as Code'. A verdade absoluta do software mora neste arquivo.
 
 ---
 
@@ -18,60 +23,52 @@
 
 ---
 
-## 🛡️ 2. Arquitetura de Segurança e Blindagem
+## 🛡️ 2. Arquitetura de Segurança, Reset Git e Blindagem
 
-1. **Proteção no Git (`.gitignore`):**
-   - Inclusão rigorosa de `docs/**/.obsidian/`, `docs/**/Segurança.md` e `docs/**/Senhas.md` no `.gitignore` raiz e secundário.
-   - Remoção dos arquivos sensíveis do rastreamento/indexação do git.
-2. **Validação de Storage & Mídias (`lib/storage-security.ts`):**
+1. **Reset do Histórico do Git (Purga de Segredos):**
+   - Árvore de commits antiga destruída e substituída por um repositório limpo (`chore: reset git history for security and update architecture`).
+   - Push forçado (`git push -u origin main --force`) realizado para purgar permanentemente qualquer credencial exposta em commits passados.
+2. **Proteção no Git (`.gitignore`):**
+   - Inclusão rigorosa de `docs/**/.obsidian/`, `docs/**/Segurança.md` e `docs/**/Senhas.md` nos arquivos `.gitignore` (raiz e secundário).
+3. **Validação de Storage & Mídias (`lib/storage-security.ts`):**
    - Whitelist estrita de MIME types (JPEG, PNG, WebP, GIF, AVIF, PDF, DOC, DOCX, XLS, XLSX).
    - Limite estrito de tamanho: **5 MB** para imagens e **10 MB** para documentos.
    - Mitigação de Pixel Flood / Image Bomb (máximo 4096px por dimensão / 16 Megapixels).
-   - Sanitização criptográfica de nomes de arquivo (Crypto UUID) contra Injeção de Comandos e Path Traversal.
-3. **Controle de Acesso & RLS (`RLS_policies.sql`):**
+   - Sanitização criptográfica de nomes de arquivo (Crypto UUID).
+4. **Controle de Acesso & RLS (`RLS_policies.sql`):**
    - Leitura pública ativada apenas para itens publicados em `escola_turmas`, `escola_documentos` e `escola_avisos`.
    - Modificação (INSERT, UPDATE, DELETE) restrita exclusivamente a usuários autenticados via Supabase Auth.
-4. **Proteção Operacional (`lib/env-guard.ts` & `lib/rate-limit.ts`):**
-   - Validação de variáveis de ambiente no startup.
-   - Rate limit configurado para formulários e Server Actions.
 
 ---
 
 ## 🚀 3. Implementações Concluídas (Ponta a Ponta)
 
-- [x] **Dados Institucionais Unificados (`lib/constants.ts`):**
+- [x] **Bugfix de Contato e WhatsApp (`lib/constants.ts` & `whatsapp-dialog.tsx`):**
   - Número oficial do WhatsApp corrigido para `+55 48 98835-4422` em todo o projeto.
   - Telefone fixo da secretaria mantido: `(48) 3665-5774`.
-  - INEP oficial: `000042004047`.
-  - Endereço oficial: `Rua Monsenhor Roberto Landel Moura, S/N - Brejaru I, Palhoça - SC, CEP 88133-490`.
 - [x] **Infraestrutura Técnica de SEO (Google Search Console):**
-  - `app/sitemap.ts`: Gerador dinâmico de sitemap para rotas públicas (`/`, `/sobre`, `/acervo`, `/avisos`, `/documentos`, `/turmas`).
-  - `app/robots.ts`: Regras de indexação liberando rotas públicas e bloqueando `/dashboard/`.
-  - Verificação Google Search Console ativada via `public/googled9f9ab4eae780ffe.html`.
+  - `app/sitemap.ts`: Gerador dinâmico de sitemap para rotas públicas.
+  - `app/robots.ts`: Configuração com `Disallow: /dashboard/`.
+  - Verificação Google Search Console via `public/googled9f9ab4eae780ffe.html`.
+- [x] **Acervo Digital, Podcasts & Revista Okaza (`app/(public)/acervo/page.tsx`):**
+  - Componente `<SpotifyEmbed />` ([components/features/spotify-embed.tsx](file:///c:/Projetos/escola-benonivio/components/features/spotify-embed.tsx)): Player dinâmico com os 6 episódios gravados do podcast do 3º ano.
+  - Componente `<RevistaOkazaCard />` ([components/features/revista-okaza-card.tsx](file:///c:/Projetos/escola-benonivio/components/features/revista-okaza-card.tsx)): Downloads das edições #1 (2019) e #2 (2020) + regras de submissão da APP.
 - [x] **Painel Administrativo ("Beno Painel" `/dashboard`):**
-  - Módulo de login e autenticação em `app/(admin)/login`.
-  - Dashboard centralizador com métricas em tempo real (`/dashboard`).
-  - Gestão e edição de turmas e links de WhatsApp (`/dashboard/turmas`).
-  - Gestão de documentos públicos com upload seguro (`/dashboard/documentos`).
-  - Mural de avisos com categorização e níveis de prioridade (`/dashboard/avisos`).
-- [x] **Documentação & Manuais (`docs/`):**
-  - `docs/02_Wiki/MANUAL_ADMIN.md`: Guia completo e didático voltado para diretoras e secretárias.
-  - Configuração de regras automáticas para novos agentes em `.agents/rules/docs_as_code.md` e `.agents/AGENTS.md`.
+  - Módulos funcionais para gestão de Turmas, Documentos, Mural de Avisos e Páginas.
+- [x] **Manual do Administrador & Documentação:**
+  - `docs/Projeto_Escola_Benonivio/02_Wiki/MANUAL_ADMIN.md`: Guia completo e didático com regra de atualização contínua para agentes.
 
 ---
 
 ## 📊 4. Gap Analysis (Requisitos Puros x Código Atual)
 
-A tabela abaixo cruza as fontes brutas (`docs/01_Raw_Sources/`) com o estado atual do código-fonte para orientar as próximas sprints:
-
-| Item / Funcionalidade Bruta | Origem em `01_Raw_Sources` | Estado Atual no Código | Ação Recomendada / Próximo Passo |
+| Item / Funcionalidade Bruta | Origem em `01_Raw_Sources` | Estado Atual no Código | Status / Ação Recomendada |
 | :--- | :--- | :--- | :--- |
-| **Embed / Widget Spotify** | `SiteLegado_Grupo_Estudos.md` | Ausente na UI atual | Criar componente `<SpotifyEmbed />` na rota `/acervo` ou `/sobre` para reproduzir os 6 episódios do podcast do 3º ano. |
-| **Revista Okaza (Links & Submissões)** | `SiteLegado_Revista_Okaza.md` | Ausente na UI atual | Adicionar seção/card dedicado no Acervo Digital com links dos PDFs de 2019 e 2020 e regras de submissão da APP. |
-| **Injeção de Dados do INEP/SAEB/Censo** | `Dossiê Histórico-Estatístico.md` & `Portal_SED_DadosOficiais.md` | Dados parciais em `/sobre` | Expandir `/sobre` com tabela histórica de proficiência SAEB/IDEB, histórico do patrono Benonívio e fundação do Brejaru. |
-| **Feed / Widget API Instagram** | `Mapeamento_Turmas_WhatsApp.md` & Dossiê | Apenas link externo | Implementar widget ou integração de feed para exibir postagens recentes do `@escolabenonivio`. |
-| **Iniciativas Estudantis (Grupo Butterfly & COM-VIDA)** | `SiteLegado_Grupo_Butterfly.md` | Não detalhado | Criar aba de "Projetos Estudantis" em `/sobre` destacando o Grupo Butterfly e o Programa COM-VIDA. |
-| **Formulário de Solicitação de Recurso APP** | `SiteLegado_APP.md` | Apenas cadastro de documentos genericos | Criar modelo/template em PDF para download de solicitação de recursos da APP e estatuto social. |
+| **Embed / Player Podcast Spotify** | `SiteLegado_Grupo_Estudos.md` | **CONCLUÍDO** | Componente `<SpotifyEmbed />` implementado na rota `/acervo`. |
+| **Revista Okaza (Links & Regras)** | `SiteLegado_Revista_Okaza.md` | **CONCLUÍDO** | Componente `<RevistaOkazaCard />` implementado na rota `/acervo`. |
+| **Injeção de Dados do INEP/SAEB/Censo** | `Dossiê Histórico-Estatístico.md` & `Portal_SED_DadosOficiais.md` | Dados parciais em `/sobre` | Próxima sprint: expandir `/sobre` com tabela histórica de proficiência SAEB/IDEB. |
+| **Feed / Widget API Instagram** | `Mapeamento_Turmas_WhatsApp.md` & Dossiê | Apenas link externo | Widget/Feed do `@escolabenonivio` pendente de token de API. |
+| **Iniciativas Estudantis (Grupo Butterfly & COM-VIDA)** | `SiteLegado_Grupo_Butterfly.md` | Não detalhado | Adicionar seção de "Projetos Estudantis" em `/sobre`. |
 
 ---
 
@@ -79,5 +76,5 @@ A tabela abaixo cruza as fontes brutas (`docs/01_Raw_Sources/`) com o estado atu
 
 Sempre que iniciar uma nova sessão ou alterar o código:
 1. Abra este arquivo (`docs/Projeto_Escola_Benonivio/04_Logs/CONTEXTO_ATUAL.md`) para se situar sobre o estado do projeto.
-2. Registre novos componentes, Server Actions ou tabelas criadas nas seções correspondentes.
-3. Mantenha a tabela de Gap Analysis atualizada conforme os pendentes forem transformados em código.
+2. Atualize [MANUAL_ADMIN.md](file:///c:/Projetos/escola-benonivio/docs/Projeto_Escola_Benonivio/02_Wiki/MANUAL_ADMIN.md) sempre que modificar rotas ou formulários administrativos.
+3. Mantenha a tabela de Gap Analysis atualizada.

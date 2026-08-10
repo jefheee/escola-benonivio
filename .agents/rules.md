@@ -1,0 +1,1 @@
+REGRA ABSOLUTA: Toda e qualquer alteração de código ou arquitetura neste projeto exige que você leia, atualize e valide o arquivo `docs/Projeto_Escola_Benonivio/04_Logs/CONTEXTO_ATUAL.md`. O padrão do projeto é 'Docs as Code'. A verdade absoluta do software mora neste arquivo.

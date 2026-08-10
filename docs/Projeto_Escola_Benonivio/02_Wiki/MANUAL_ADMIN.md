@@ -1,92 +1,90 @@
 # 📖 Manual do Administrador - EEB Professor Benonívio João Martins
 
-Este guia foi elaborado especialmente para a **Direção, Secretaria e Equipe Pedagógica** da Escola de Educação Básica Professor Benonívio João Martins. Seu objetivo é ensinar, passo a passo e de forma simples, como gerenciar todas as informações do portal da escola.
+> [!IMPORTANT]
+> **Nota para Agentes de Código & Desenvolvedores (Docs as Code):**  
+> Este manual é a documentação viva da interface do usuário administrativo. Toda vez que uma nova funcionalidade, botão, rota ou trava de segurança for alterada no código-fonte, o agente responsável **DEVE atualizar imediatamente este manual** para manter a secretaria e direção escolar instruídas corretamente.
 
 ---
 
-## 📌 1. Como Acessar o Painel Administrativo
+## 📌 1. Como Acessar o Painel Administrativo ("Beno Painel")
 
-1. Abra o navegador (Google Chrome, Microsoft Edge ou Safari) e acesse o site da escola: `https://escolabenonivio.vercel.app`.
-2. Vá até o **Rodapé** (final da página) e clique no link **"Área Restrita / Painel Admin"** ou acesse diretamente: `https://escolabenonivio.vercel.app/login`.
-3. Digite o e-mail institucional da escola (`benonivio@sed.sc.gov.br`) e a sua senha cadastrada.
-4. Clique no botão **"Entrar no Painel"**.
+1. Abra o seu navegador de internet (Google Chrome, Microsoft Edge ou Safari) no computador ou celular.
+2. Acesse o site da escola: `https://escolabenonivio.vercel.app`.
+3. Role até o **Rodapé** (final da página) e clique no link **"Área Restrita / Painel Admin"** ou acesse diretamente: `https://escolabenonivio.vercel.app/login`.
+4. Digite o e-mail institucional da escola (`benonivio@sed.sc.gov.br`) e a sua senha cadastrada.
+5. Clique no botão **"Entrar no Painel"**.
 
 > [!TIP]
-> **Dica de Segurança:** Ao terminar de usar o sistema, lembre-se sempre de clicar em **"Sair"** no menu lateral para encerrar sua sessão com segurança.
+> **Dica de Segurança:** Ao encerrar o expediente ou sair do computador, clique sempre no botão **"Sair"** localizado no menu lateral para proteger o painel contra acessos não autorizados.
 
 ---
 
 ## 💬 2. Gerenciando Turmas e Grupos de WhatsApp
 
-Nesta seção, você pode atualizar os links dos grupos de WhatsApp de cada turma para que pais, alunos e responsáveis entrem no canal de comunicação correto.
+Nesta área você mantém atualizados os nomes das turmas e os links dos grupos de WhatsApp para que pais, responsáveis e alunos entrem no grupo correto.
 
-### Passo a passo para atualizar uma turma:
-1. No menu lateral do Painel, clique em **"Turmas & WhatsApp"** (`/dashboard/turmas`).
-2. Escolha a aba correspondente ao turno desejado: **Matutino**, **Vespertino** ou **Noturno**.
-3. Localize a turma desejada (ex: *1º Ano 01*, *3º Ano EM 01*) e clique no botão **"Editar"**.
-4. Cole o novo link do grupo do WhatsApp no campo indicado (ex: `https://chat.whatsapp.com/...`).
+### Passo a passo:
+1. No menu lateral, clique em **"Turmas & WhatsApp"** (`/dashboard/turmas`).
+2. Escolha o turno correspondente: **Matutino**, **Vespertino** ou **Noturno**.
+3. Localize a turma desejada (ex: *6º Ano 61*, *1º Ano EM 100*) e clique em **"Editar"**.
+4. Atualize o nome da turma ou cole o novo link do WhatsApp no campo correspondente (ex: `https://chat.whatsapp.com/...`).
 5. Clique em **"Salvar Alterações"**.
-
-> [!NOTE]
-> O link é atualizado imediatamente no site público na página **"Nossas Turmas"**, permitindo que a comunidade escolar acesse com apenas 1 clique.
 
 ---
 
-## 📄 3. Publicação de Documentos Públicos e Transparência
+## 📄 3. Publicação de Documentos Públicos e Prestação de Contas (APP)
 
-A legislação e a governança escolar exigem transparência em Editais, Prestação de Contas da APP (Associação de Pais e Professores) e Regulamentos Internos.
+Para garantir a transparência da escola (Editais de Eleição, Atas da APP, Prestação de Contas, Regulamentos Internos):
 
-### Passo a passo para publicar um documento:
-1. No menu lateral do Painel, clique em **"Documentos Públicos"** (`/dashboard/documentos`).
-2. Clique no botão azul **"+ Novo Documento"**.
-3. Preencha o **Título** (ex: *Edital de Eleição da APP 2026*), selecione a **Categoria** (*Edital*, *Ata*, *Prestação de Contas*, *Regulamento*) e adicione uma breve descrição.
-4. Clique na área de **Upload** e selecione o arquivo do seu computador (PDF, Word ou Excel).
+### Passo a passo para publicar:
+1. No menu lateral, clique em **"Documentos Públicos"** (`/dashboard/documentos`).
+2. Clique no botão **"+ Novo Documento"**.
+3. Digite o **Título** (ex: *Ata da Assembleia Ordinária da APP*), escolha a **Categoria** (*Edital*, *Ata*, *Prestação de Contas*, *Regulamento*) e uma breve descrição.
+4. Selecione o arquivo no seu computador (PDF, Word ou Excel).
 5. Clique em **"Publicar Documento"**.
 
-### 🛡️ Travas Automáticas de Segurança (Proteção para Você):
-Para evitar problemas no site e garantir que a página continue rápida e segura para os pais:
-- **Tamanho Máximo de Arquivos:** O sistema limita automaticamente documentos a **10MB** e imagens a **5MB**. Se você tentar enviar um arquivo maior, o sistema exibirá um aviso educativo.
-- **Validação de Formatos:** Apenas formatos seguros (como PDF, DOCX, XLSX, PNG, JPG) são aceitos. Isso evita a publicação acidental de vírus ou arquivos corrompidos.
-- **Armazenamento Blindado:** Todos os documentos ficam salvos no bucket seguro `escola_midias` da infraestrutura Supabase, protegidos por políticas automáticas de acesso (RLS).
+### 🛡️ Travas Automáticas de Segurança (Protegendo Você e o Site):
+Para tranquilizar você durante o uso, o sistema possui "travas inteligentes" que evitam erros acidentais:
+- **Limite de Tamanho:** Arquivos de documentos são aceitos até **10 MB** e imagens até **5 MB**. Se um arquivo for maior, o sistema avisa amigavelmente para que você o comprima antes.
+- **Proteção contra Vírus:** O sistema só aceita formatos seguros (como PDF, DOCX, XLSX, PNG, JPG).
+- **Armazenamento Blindado:** Todos os documentos ficam salvos no bucket seguro `escola_midias` da infraestrutura Supabase, protegidos por criptografia automática.
 
 ---
 
 ## 📢 4. Publicando Avisos e Comunicados no Mural
 
-O **Mural de Avisos** (`/avisos`) serve para informar a comunidade escolar sobre reuniões de pais, feriados, suspensão de aulas, prazos de matrícula ou eventos comunitários.
+Para comunicar suspensão de aulas por chuvas, reuniões de pais ou eventos comunitários:
 
-### Passo a passo para criar um aviso:
-1. No menu lateral do Painel, clique em **"Mural de Avisos"** (`/dashboard/avisos`).
+### Passo a passo:
+1. No menu lateral, clique em **"Mural de Avisos"** (`/dashboard/avisos`).
 2. Clique em **"+ Criar Aviso"**.
-3. Preencha o **Título** e o **Texto do Comunicado**.
-4. Defina a **Prioridade**:
-   - 🟢 **Informativo / Geral:** Para avisos rotineiros (reuniões, feira cultural).
-   - 🟡 **Importante:** Para lembretes com prazos próximos (rematrículas).
-   - 🔴 **Urgente / Alerta:** Para avisos imediatos (ex: suspensão de aula por chuva).
-5. Se desejar, marque a opção **"Fixar no topo"** para que a notícia apareça em destaque na página inicial.
+3. Preencha o **Título** e a **Mensagem**.
+4. Escolha o nível de **Prioridade**:
+   - 🟢 **Informativo / Geral:** Reuniões rotineiras e lembretes gerais.
+   - 🟡 **Importante:** Prazos de rematrícula e entregas de notas.
+   - 🔴 **Urgente / Alerta:** Avisos imediatos e cancelamentos de emergência.
+5. Se quiser destaque especial na página inicial, marque **"Fixar no topo"**.
 6. Clique em **"Publicar Aviso"**.
 
 ---
 
-## 📚 5. Acervo Digital e Projetos Pedagógicos
+## 📚 5. Acervo Digital, Podcasts e Revista Okaza
 
-No módulo **"Acervo Digital"** (`/dashboard/acervo`), você pode cadastrar e organizar:
-- **Fotos de Feiras de Ciências e Eventos:** Registro histórico da escola.
-- **Projetos Pedagógicos:** Documentação de grupos de estudo, projetos de incentivo à leitura e iniciativas comunitárias.
-- **Publicações e Revistas:** Links e mídias das publicações escolares.
-
----
-
-## ❓ Perguntas Frequentes (FAQ)
-
-* **O que fazer se o arquivo for maior que o limite permitido?**  
-  Caso seu arquivo PDF tenha mais de 10MB, você pode usar ferramentas gratuitas online (como *ILovePDF* ou *Smallpdf*) para "Comprimir PDF" antes de fazer o envio.
-
-* **Como excluir um documento ou aviso antigo?**  
-  No painel correspondente, basta clicar no ícone da **Lixeira (Excluir)** ao lado do item desejado e confirmar. O item será removido do site instantaneamente.
-
-* **Esqueci minha senha de acesso, o que fazer?**  
-  Entre em contato com o suporte técnico da administração do sistema para solicitar a redefinição de credenciais de forma segura.
+O site público exibe automaticamente:
+- **Edições da Revista Okaza:** PDFs completos das edições #1 (2019) e #2 (2020) com relatos de professores da escola.
+- **Podcasts do Grupo de Estudos do 3º Ano:** Player integrado do Spotify com os 6 episódios preparatórios para ENEM e vestibulares.
+- **Apostilas e Roteiros de Aula:** Gerenciados pelo módulo de acervo pedagógico.
 
 ---
-*Manual elaborado pela Engenharia de Software do Projeto EEB Professor Benonívio João Martins.*
+
+## 🔄 6. Protocolo de Sincronização e Atualização do Manual (Docs as Code)
+
+Toda vez que a equipe técnica ou agente de IA realizar uma das seguintes alterações:
+1. Criar um novo formulário ou campo na área administrativa;
+2. Alterar limites de upload (MB) ou políticas de permissão RLS;
+3. Adicionar novas seções ao menu lateral (`/dashboard/*`);
+
+O arquivo `docs/Projeto_Escola_Benonivio/02_Wiki/MANUAL_ADMIN.md` **DEVE SER ATUALIZADO** na mesma alteração de código, mantendo o repositório sincronizado.
+
+---
+*Manual mantido em sincronia pela Engenharia de Software do Projeto EEB Professor Benonívio João Martins.*
