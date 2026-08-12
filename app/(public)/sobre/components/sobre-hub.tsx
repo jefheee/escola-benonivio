@@ -428,7 +428,7 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
             {/* Google Map & Address Details */}
             <div className="lg:col-span-1 space-y-6">
               <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 space-y-4">
-                <h4 className="font-display font-extrabold text-base text-slate-900 border-b pb-2">Localização no Brejaru</h4>
+                <h4 className="font-display font-extrabold text-base text-slate-900 border-b pb-2">Localização</h4>
                 <div className="space-y-1.5 text-xs text-slate-600 font-semibold leading-relaxed">
                   <span className="text-[10px] font-bold text-slate-400 block uppercase">Endereço da Secretaria</span>
                   <p className="font-bold text-slate-800 leading-snug">
