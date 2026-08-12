@@ -1,6 +1,6 @@
 # 📌 CONTEXTO ATUAL DO PROJETO - EEB PROFESSOR BENONÍVIO JOÃO MARTINS
 
-**Última Atualização:** 10 de Agosto de 2026  
+**Última Atualização:** 12 de Agosto de 2026  
 **Status do Projeto:** Em Desenvolvimento Ativo / Histórico Git Resetado e Blindado / SEO & Acervo Concluídos  
 **Arquitetura:** Docs as Code (Fonte de Verdade)
 
@@ -43,6 +43,8 @@
 
 ## 🚀 3. Implementações Concluídas (Ponta a Ponta)
 
+- [x] **Fix de Compilação/Deploy Vercel (`components/features/revista-okaza-card.tsx`):**
+  - Correção de caracteres de aspas duplas sem escape (`"` -> `&quot;`) na regra `react/no-unescaped-entities` do ESLint.
 - [x] **Bugfix de Contato e WhatsApp (`lib/constants.ts` & `whatsapp-dialog.tsx`):**
   - Número oficial do WhatsApp corrigido para `+55 48 98835-4422` em todo o projeto.
   - Telefone fixo da secretaria mantido: `(48) 3665-5774`.

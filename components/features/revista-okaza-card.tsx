@@ -98,7 +98,7 @@ export default function RevistaOkazaCard() {
           </div>
           <div className="flex items-start gap-2">
             <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-            <span><strong>Formatos:</strong> Relatos de Experiência Didática ou Seção "Fala Mestre" (artigos, ensaios, poesias).</span>
+            <span><strong>Formatos:</strong> Relatos de Experiência Didática ou Seção &quot;Fala Mestre&quot; (artigos, ensaios, poesias).</span>
           </div>
           <div className="flex items-start gap-2">
             <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
