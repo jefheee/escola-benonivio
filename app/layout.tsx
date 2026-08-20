@@ -16,6 +16,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://escolabenonivio.vercel.app"),
   title: {
     default: `${SCHOOL_INFO.name} | Portal Oficial`,
     template: `%s | ${SCHOOL_INFO.shortName}`,
@@ -27,7 +28,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "pt_BR",
-    url: "https://eebbenonivio.sc.gov.br",
+    url: "https://escolabenonivio.vercel.app",
     title: `${SCHOOL_INFO.name} | Portal Oficial`,
     description: `Acesse o canal oficial da ${SCHOOL_INFO.name}. Informações sobre turmas, avisos do Instagram e acervo de projetos.`,
     siteName: SCHOOL_INFO.name,
@@ -49,7 +50,13 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: "/assets/icon/logobeno1.png",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
   },
 };
 
@@ -67,8 +74,22 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": SCHOOL_INFO.name,
+    "alternateName": ["EEB Benonívio", "Escola Benonívio"],
+    "url": "https://escolabenonivio.vercel.app",
+  };
+
   return (
     <html lang="pt-BR" className={`${inter.variable} ${outfit.variable} scroll-smooth`}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="font-sans antialiased bg-background text-foreground flex flex-col min-h-screen">
         {children}
       </body>
