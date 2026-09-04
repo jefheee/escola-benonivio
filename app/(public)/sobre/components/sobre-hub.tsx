@@ -394,7 +394,7 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
 
       case 'ambientes':
         return (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fadeIn text-left">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start animate-fadeIn text-left">
             <div className="lg:col-span-2 space-y-6">
               <h3 className="font-display font-extrabold text-2xl text-slate-900 border-b border-slate-200 pb-3 flex items-center gap-2">
                 <MapPin className="h-6 w-6 text-slate-700 shrink-0" />
@@ -404,7 +404,7 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
                 Revitalizada estruturalmente de forma ampla em 2007 (investimento estadual superior a R$ 1 milhão), a escola Professor Benonívio João Martins conta com uma estrutura completa de salas amplas e arejadas para atender cerca de 1.300 alunos em três turnos letivos:
               </p>
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-semibold text-slate-600">
-                <li className="flex items-start gap-2.5 p-3.5 bg-slate-50 border rounded-xl">
+                <li className="flex items-start gap-2.5 p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
                   <div className="p-1 bg-slate-200 text-slate-800 rounded mt-0.5">
                     <CheckCircle className="h-3.5 w-3.5" />
                   </div>
@@ -413,7 +413,7 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
                     <span>Espaço dedicado às aulas de educação física e competições esportivas regionais.</span>
                   </div>
                 </li>
-                <li className="flex items-start gap-2.5 p-3.5 bg-slate-50 border rounded-xl">
+                <li className="flex items-start gap-2.5 p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
                   <div className="p-1 bg-slate-200 text-slate-800 rounded mt-0.5">
                     <CheckCircle className="h-3.5 w-3.5" />
                   </div>
@@ -422,7 +422,7 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
                     <span>Áreas externas seguras para recreação e encontros da comunidade escolar.</span>
                   </div>
                 </li>
-                <li className="flex items-start gap-2.5 p-3.5 bg-slate-50 border rounded-xl">
+                <li className="flex items-start gap-2.5 p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
                   <div className="p-1 bg-slate-200 text-slate-800 rounded mt-0.5">
                     <CheckCircle className="h-3.5 w-3.5" />
                   </div>
@@ -431,7 +431,7 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
                     <span>Salas adaptadas para pesquisas de ciências e informática conectadas por rede interna.</span>
                   </div>
                 </li>
-                <li className="flex items-start gap-2.5 p-3.5 bg-slate-50 border rounded-xl">
+                <li className="flex items-start gap-2.5 p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
                   <div className="p-1 bg-slate-200 text-slate-800 rounded mt-0.5">
                     <CheckCircle className="h-3.5 w-3.5" />
                   </div>
@@ -443,11 +443,24 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
               </ul>
             </div>
 
-            {/* Google Map & Address Details */}
-            <div className="lg:col-span-1 space-y-6">
-              <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 space-y-4">
-                <h4 className="font-display font-extrabold text-base text-slate-900 border-b pb-2">Localização</h4>
-                <div className="space-y-1.5 text-xs text-slate-600 font-semibold leading-relaxed">
+            {/* Google Map & Address Details - Balanced Height */}
+            <div className="lg:col-span-1">
+              <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 space-y-4 shadow-sm">
+                <div className="flex items-center justify-between border-b pb-2">
+                  <h4 className="font-display font-extrabold text-base text-slate-900">Localização</h4>
+                  <a
+                    href="https://maps.google.com/?q=EEB+Prof+Benonivio+Joao+Martins"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-[11px] font-bold text-[#00185f] hover:text-[#bc0100] transition-colors"
+                    title="Abrir no Google Maps"
+                  >
+                    <span>Abrir mapa</span>
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+
+                <div className="space-y-1 text-xs text-slate-600 font-semibold leading-relaxed">
                   <span className="text-[10px] font-bold text-slate-400 block uppercase">Endereço da Secretaria</span>
                   <p className="font-bold text-slate-800 leading-snug">
                     {SCHOOL_INFO.address.street}, {SCHOOL_INFO.address.number}<br />
@@ -456,7 +469,7 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
                   </p>
                 </div>
 
-                <div className="w-full h-72 sm:h-80 rounded-2xl overflow-hidden border border-slate-200 shadow-inner">
+                <div className="w-full h-44 sm:h-48 rounded-2xl overflow-hidden border border-slate-200 shadow-inner bg-slate-100">
                   <iframe
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3535.099399256199!2d-48.6671079!3d-27.621437999999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9527358fbaaaaaab%3A0xa4a4e87166b392b7!2sEeb%20Prof%20Benonivio%20Joao%20Martins!5e0!3m2!1spt-BR!2sbr!4v1788501007321!5m2!1spt-BR!2sbr"
                     width="100%"

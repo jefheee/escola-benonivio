@@ -105,13 +105,13 @@ export default function AvisosCarousel({ avisos }: AvisosCarouselProps) {
               className="w-[290px] sm:w-[370px] shrink-0 snap-start bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between cursor-pointer group hover:border-amber-400 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 h-[380px]"
             >
               {/* Card Image */}
-              <div className="h-44 bg-slate-50 relative shrink-0 overflow-hidden flex items-center justify-center border-b border-slate-100">
+              <div className="h-44 bg-slate-100/70 relative shrink-0 overflow-hidden flex items-center justify-center border-b border-slate-100">
                 {firstImage ? (
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img
                     src={firstImage}
                     alt={aviso.titulo}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                    className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500 ease-out"
                   />
                 ) : (
                   <div className="flex flex-col items-center justify-center text-slate-400 gap-2 p-6 text-center w-full h-full bg-gradient-to-br from-slate-50 to-slate-100/50">
@@ -169,17 +169,17 @@ export default function AvisosCarousel({ avisos }: AvisosCarouselProps) {
           >
             {/* Show first image or carousel of images if multiple exist */}
             {selectedAviso.imagens && selectedAviso.imagens.length > 0 ? (
-              <div className="h-60 shrink-0 relative overflow-hidden bg-slate-900 flex gap-2 overflow-x-auto snap-x snap-mandatory">
+              <div className="h-72 sm:h-96 shrink-0 relative overflow-hidden bg-slate-950 flex gap-2 overflow-x-auto snap-x snap-mandatory">
                 {selectedAviso.imagens.map((imgUrl, i) => (
-                  <div key={i} className="w-full h-full shrink-0 snap-start relative">
+                  <div key={i} className="w-full h-full shrink-0 snap-start relative flex items-center justify-center bg-slate-950">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={imgUrl}
                       alt={`${selectedAviso.titulo} - ${i}`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain p-2"
                     />
                     {selectedAviso.imagens!.length > 1 && (
-                      <span className="absolute bottom-3 right-3 bg-black/60 text-white text-[10px] font-bold px-2 py-1 rounded">
+                      <span className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm text-white text-[10px] font-bold px-2.5 py-1 rounded-md">
                         {i + 1} de {selectedAviso.imagens!.length}
                       </span>
                     )}
@@ -187,12 +187,12 @@ export default function AvisosCarousel({ avisos }: AvisosCarouselProps) {
                 ))}
               </div>
             ) : selectedAviso.imagem_url ? (
-              <div className="h-56 shrink-0 relative overflow-hidden">
+              <div className="h-72 sm:h-96 shrink-0 relative overflow-hidden bg-slate-950 flex items-center justify-center">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={selectedAviso.imagem_url}
                   alt={selectedAviso.titulo}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain p-2"
                 />
               </div>
             ) : null}

@@ -492,17 +492,17 @@ export default function AvisosManager({ initialNotices }: ManagerProps) {
 
               {/* Upload Galeria de Imagens JSONB */}
               <div className="space-y-2 pt-1">
-                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">Galeria de Imagens (Até 5 fotos vertical 3:4)</label>
+                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">Galeria de Imagens & Banners (Até 5 fotos)</label>
                 <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
                   {/* Grid de miniaturas */}
                   <div className="flex flex-wrap gap-3">
                     {imagens.map((url, index) => (
-                      <div key={index} className="relative group w-20 h-24 border border-slate-300 rounded-lg overflow-hidden bg-slate-200 flex items-center justify-center shadow-sm">
+                      <div key={index} className="relative group w-20 h-24 border border-slate-300 rounded-lg overflow-hidden bg-slate-100 flex items-center justify-center shadow-sm">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={url}
                           alt={`Galeria ${index}`}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-contain p-1"
                         />
                         <button
                           type="button"
@@ -521,7 +521,6 @@ export default function AvisosManager({ initialNotices }: ManagerProps) {
                             setImagens([...imagens, url]);
                             showFeedback('success', 'Imagem adicionada à galeria!');
                           }}
-                          aspectRatio={3 / 4}
                           bucketName="escola_midias"
                           folderName="banners"
                           label="+"
@@ -655,7 +654,7 @@ export default function AvisosManager({ initialNotices }: ManagerProps) {
                   <img
                     src={imagens[0]}
                     alt={previewTitulo || 'Imagem Principal'}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain p-2"
                   />
                 ) : (
                   <div className="flex flex-col items-center justify-center text-slate-400 gap-2 p-6 text-center w-full h-full bg-slate-50">

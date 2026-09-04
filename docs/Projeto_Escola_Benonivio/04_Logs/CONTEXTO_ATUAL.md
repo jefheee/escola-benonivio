@@ -105,8 +105,27 @@
 - [x] **Restauração e Encaixe do Google Maps Responsivo (`next.config.mjs` & `sobre-hub.tsx`):**
   - Liberado `frame-src 'self' https://www.google.com https://www.google.com.br https://open.spotify.com;` na Content Security Policy (CSP), resolvendo o bloqueio de iframes externos do Google Maps e Spotify.
   - Atualizado o embed do Google Maps da escola com o novo código e proporção responsiva 600x450 (4:3) adaptável (altura dinâmica `h-72 sm:h-80`), título acessível e `strict-origin-when-cross-origin`.
+- [x] **Alinhamento e Proporção da Localização (`app/(public)/sobre/components/sobre-hub.tsx`):**
+  - Ajustada a altura do container do iframe do Google Maps para `h-44 sm:h-48` no card de "Localização", alinhando simetricamente o início e o fim da coluna da direita com a lista de "Infraestrutura & Ambientes" (`items-start`).
+  - Adicionado link direto acessível "Abrir mapa" apontando diretamente para o Google Maps da escola com `ExternalLink`.
+- [x] **Padronização e Ordem Cronológica dos Avisos (`app/(public)/avisos/components/avisos-list.tsx`):**
+  - Substituído o layout CSS `columns` por CSS Grid bidimensional (`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6`), garantindo que os avisos fluam estritamente na ordem cronológica horizontal (da esquerda para a direita, linha por linha).
+  - Padronizada a altura dos cards com altura fixa de container de imagem (`h-56`), título clampado (`h-11 line-clamp-2`), resumo clampado (`h-14 line-clamp-3`) e rodapé fixado na base (`mt-auto flex justify-between`).
+- [x] **Eliminação de Cortes e Zoom em Imagens (`ImageCropper` & Display Global):**
+  - Adicionado o modo padrão **"Original (Sem Cortes)"** no `ImageCropper` (`components/admin/image-cropper.tsx`), preservando 100% da imagem sem perdas de cabeçalho, rodapé ou texto, enviando o arquivo original diretamente pela Server Action `uploadMediaAction`.
+  - Adicionado modo "Recortar / Ajustar" opcional com seletores de formato (16:9, 4:3, 3:4, 1:1) caso o administrador deseje explicitamente reenquadrar.
+  - Substituído `object-cover` por `object-contain` em todos os cards e modais públicos e administrativos (`avisos-list.tsx`, `avisos-carousel.tsx`, `avisos-manager.tsx`, `acervo-manager.tsx`, `turmas-manager.tsx`, `turmas/[id]/page.tsx`), garantindo visualização integral de cartazes, panfletos e fotos.
+- [x] **Alimentação Escolar & Cardápio Mobile-First (`app/(public)/cardapio/page.tsx` & `CardapioDoDia`):**
+  - Redesenhada a rota pública `/cardapio` com cabeçalho oficial do PNAE/SED-SC focado em clareza para pais e alunos acessando via celular.
+  - Criado o componente `<CardapioDoDia />` com visualização limpa mobile-first, divisão por turnos (Diurno: Matutino/Vespertino e Noturno: Jantar), garantias institucionais e estado de carregamento amigável.
+  - Preservada a área de consulta e download dos editais e cronogramas mensais em PDF da SED/SC.
+- [x] **Arquitetura de Automação de Cardápio via IA (Docs as Code & Schema):**
+  - Criado o documento `docs/Projeto_Escola_Benonivio/00_Schema/Supabase_Cardapio.md` (e espelho em `docs/00_Schema/Supabase_Cardapio.md`).
+  - Formalizado o "AI PDF Parser Workflow": a secretaria não fará digitação manual; apenas enviará o PDF da SED/SC. O backend (Server Action) aciona a LLM API (Google Gemini API ou Groq como fallback) para extrair o array JSON padronizado `[{ data: 'YYYY-MM-DD', turno: 'diurno'|'noturno', descricao: '...' }]` e gravar via bulk upsert no PostgreSQL.
+  - DDL SQL completo com tabela `refeicoes`, tipo enum `tipo_turno_refeicao`, restrição única `(data, turno)`, índices e 4 políticas RLS (leitura pública e mutação restrita a autenticados).
+  - Preparadas as variáveis de ambiente `AI_API_KEY`, `GEMINI_API_KEY` e `GROQ_API_KEY` em `.env.local` e blindadas no `lib/env-guard.ts` contra vazamentos no client-side.
 - [x] **Manual do Administrador & Documentação:**
-  - `docs/Projeto_Escola_Benonivio/02_Wiki/MANUAL_ADMIN.md`: Atualizado com as diretrizes de upload blindado e hiperlinks automáticos.
+  - `docs/Projeto_Escola_Benonivio/02_Wiki/MANUAL_ADMIN.md`: Atualizado com as diretrizes de upload de imagens integrais e layout do mural.
 
 ---
 
@@ -116,6 +135,8 @@
 | :--- | :--- | :--- | :--- |
 | **Embed / Player Podcast Spotify** | `SiteLegado_Grupo_Estudos.md` | **CONCLUÍDO** | Componente `<SpotifyEmbed />` implementado na rota `/acervo`. |
 | **Revista Okaza (Links & Regras)** | `SiteLegado_Revista_Okaza.md` | **CONCLUÍDO** | Componente `<RevistaOkazaCard />` implementado na rota `/acervo`. |
+| **Cardápio Digital & CardapioDoDia (UI)** | Requisito UX Mobile | **CONCLUÍDO (FASE 1)** | UI pública `/cardapio` implementada com cabeçalho PNAE e componente `<CardapioDoDia />`. |
+| **Automação de Leitura de PDF de Cardápio via IA (Backend)** | Mudança Arquitetural Aprovada | **ARQUITETURA DOCUMENTADA** | Schema SQL e workflow em `Supabase_Cardapio.md`, slots em `.env.local` e `lib/env-guard.ts`. Aguardando chave para execução do parser. |
 | **Injeção de Dados do INEP/SAEB/Censo** | `Dossiê Histórico-Estatístico.md` & `Portal_SED_DadosOficiais.md` | Dados parciais em `/sobre` | Próxima sprint: expandir `/sobre` com tabela histórica de proficiência SAEB/IDEB. |
 | **Feed / Widget API Instagram** | `Mapeamento_Turmas_WhatsApp.md` & Dossiê | Apenas link externo | Widget/Feed do `@escolabenonivio` pendente de token de API. |
 | **Iniciativas Estudantis (Grupo Butterfly & COM-VIDA)** | `SiteLegado_Grupo_Butterfly.md` | Não detalhado | Adicionar seção de "Projetos Estudantis" em `/sobre`. |

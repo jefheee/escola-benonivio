@@ -499,21 +499,22 @@ export default function AcervoManager({ initialItems }: ManagerProps) {
 
               {/* Upload Galeria de Imagens JSONB */}
               <div className="space-y-2 pt-1">
-                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">Álbum de Imagens (Até 10 fotos 4:3)</label>
+                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">Álbum de Imagens & Fotos (Até 10 fotos)</label>
                 <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
                   <div className="flex flex-wrap gap-2.5">
                     {imagens.map((url, index) => (
-                      <div key={index} className="relative group w-20 h-16 border border-slate-300 rounded-lg overflow-hidden bg-slate-200 flex items-center justify-center shadow-sm">
+                      <div key={index} className="relative group w-20 h-16 border border-slate-300 rounded-lg overflow-hidden bg-slate-100 flex items-center justify-center shadow-sm">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={url}
                           alt={`Galeria ${index}`}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-contain p-1"
                         />
                         <button
                           type="button"
                           onClick={() => setImagens(imagens.filter((_, i) => i !== index))}
                           className="absolute -top-1 -right-1 bg-[#bc0100] text-white rounded-full p-1 shadow hover:bg-[#bc0100]/90 transition-colors"
+                          title="Remover imagem"
                         >
                           <X className="h-3 w-3" />
                         </button>
@@ -526,7 +527,6 @@ export default function AcervoManager({ initialItems }: ManagerProps) {
                             setImagens([...imagens, url]);
                             showFeedback('success', 'Imagem adicionada ao álbum!');
                           }}
-                          aspectRatio={4 / 3}
                           bucketName="escola_midias"
                           folderName="acervo"
                           label="+"
@@ -609,9 +609,9 @@ export default function AcervoManager({ initialItems }: ManagerProps) {
               {imagens.length > 0 && (
                 <div className="grid grid-cols-2 gap-2 pt-2">
                   {imagens.slice(0, 4).map((url, i) => (
-                    <div key={i} className="rounded-lg overflow-hidden border border-slate-250 aspect-video bg-slate-50">
+                    <div key={i} className="rounded-lg overflow-hidden border border-slate-250 aspect-video bg-slate-100 flex items-center justify-center">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={url} alt={`Preview ${i}`} className="w-full h-full object-cover" />
+                      <img src={url} alt={`Preview ${i}`} className="w-full h-full object-contain p-1" />
                     </div>
                   ))}
                 </div>

@@ -60,10 +60,11 @@ Para comunicar suspensão de aulas por chuvas, reuniões de pais ou eventos comu
 2. Clique em **"+ Criar Aviso"**.
 3. Preencha o **Título**, o **Resumo** e o **Conteúdo Completo**.
    - 🔗 **Links e Sites Automáticos:** Qualquer link colado no texto (ex: `https://www.sed.sc.gov.br/...` ou `www.sc.gov.br`) será automaticamente detectado pelo site público e transformado em um link azul clicável que abre em uma nova aba com segurança.
-4. **Adicionar Imagens:**
-   - Clique em **"Adicionar Imagem de Capa"** para selecionar fotos do seu computador (PNG, JPG, WebP).
-   - O sistema abrirá o painel **"Recortar e Ajustar Imagem"**, permitindo enquadrar e centralizar a imagem perfeitamente antes de enviar.
-   - O upload é processado diretamente pelos servidores seguros da escola, aceitando imagens de alta resolução sem erros.
+4. **Adicionar Imagens & Banners:**
+   - Clique em **"Adicionar Imagem"** para selecionar fotos do seu computador (PNG, JPG, WebP).
+   - O painel abrirá por padrão na opção **"Original (Sem Cortes)"**, garantindo que cartazes, flyers, panfletos e informativos verticais ou horizontais sejam salvos 100% íntegros, sem nenhum corte ou zoom que corte cabeçalhos e textos.
+   - Se desejar recortar propositalmente em um formato específico (16:9, 4:3, 3:4 ou 1:1), clique na aba **"Recortar / Ajustar"**.
+   - No site público (`/avisos`), os comunicados são organizados em formato de grade com altura padronizada e ordenados em sequência cronológica natural (da esquerda para a direita).
 5. Se desejar, marque **"Destacar na Página Inicial"** para exibir no carrossel de destaques da Home.
 6. Clique em **"Salvar Aviso"**.
 

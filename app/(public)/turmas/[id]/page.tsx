@@ -158,12 +158,12 @@ export default async function TurmaDetailPage({ params }: PageProps) {
                     )}
 
                     {post.imagem_url && (
-                      <div className="mt-3 rounded-xl overflow-hidden border border-slate-100 max-h-[350px] w-full flex justify-center bg-slate-50">
+                      <div className="mt-3 rounded-xl overflow-hidden border border-slate-100 max-h-[380px] w-full flex justify-center items-center bg-slate-100/70 p-1">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={post.imagem_url}
                           alt={post.titulo}
-                          className="w-full h-full object-cover"
+                          className="w-auto max-h-[370px] object-contain rounded-lg"
                         />
                       </div>
                     )}

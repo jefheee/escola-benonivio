@@ -640,13 +640,13 @@ export default function TurmasManager({ initialTurmas }: ManagerProps) {
 
                   {/* Multiple image gallery uploads */}
                   <div className="space-y-2 pt-1">
-                    <label className="text-[10px] font-bold text-slate-655 uppercase block">Imagens do Recado (Até 5, 16:9)</label>
+                    <label className="text-[10px] font-bold text-slate-655 uppercase block">Imagens do Recado (Até 5 fotos)</label>
                     <div className="bg-white border border-slate-200 p-3 rounded-lg space-y-2">
                       <div className="flex flex-wrap gap-2">
                         {postImagens.map((url, idx) => (
-                          <div key={idx} className="relative w-16 h-10 border border-slate-300 rounded overflow-hidden shadow-sm flex items-center justify-center">
+                          <div key={idx} className="relative w-16 h-10 border border-slate-300 rounded overflow-hidden shadow-sm flex items-center justify-center bg-slate-100">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={url} alt={`Post ${idx}`} className="w-full h-full object-cover" />
+                            <img src={url} alt={`Post ${idx}`} className="w-full h-full object-contain p-0.5" />
                             <button
                               type="button"
                               onClick={() => setPostImagens(postImagens.filter((_, i) => i !== idx))}
@@ -663,7 +663,6 @@ export default function TurmasManager({ initialTurmas }: ManagerProps) {
                                 setPostImagens([...postImagens, url]);
                                 showFeedback('success', 'Imagem inserida no recado!');
                               }}
-                              aspectRatio={16 / 9}
                               bucketName="escola_midias"
                               folderName="posts"
                               label="+"
@@ -780,9 +779,9 @@ export default function TurmasManager({ initialTurmas }: ManagerProps) {
                         {((post.imagens as string[]) || (post.imagem_url ? [post.imagem_url] : [])).length > 0 && (
                           <div className="grid grid-cols-3 gap-2 mt-2">
                             {((post.imagens as string[]) || (post.imagem_url ? [post.imagem_url] : [])).map((url, i) => (
-                              <div key={i} className="rounded-lg overflow-hidden border border-slate-200 h-16 bg-slate-50">
+                              <div key={i} className="rounded-lg overflow-hidden border border-slate-200 h-16 bg-slate-100 flex items-center justify-center">
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img src={url} alt={`Foto recado ${i}`} className="w-full h-full object-cover" />
+                                <img src={url} alt={`Foto recado ${i}`} className="w-full h-full object-contain p-1" />
                               </div>
                             ))}
                           </div>

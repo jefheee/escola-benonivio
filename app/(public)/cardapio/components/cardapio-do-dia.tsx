@@ -1,0 +1,252 @@
+'use client';
+
+import { useState } from 'react';
+import { Sun, Moon, Utensils, Clock, CheckCircle2, Info, Sparkles } from 'lucide-react';
+
+interface RefeicaoMock {
+  turno: 'diurno' | 'noturno';
+  pratoPrincipal: string;
+  acompanhamentos: string[];
+  sobremesaOuBebida?: string;
+  caloriasAprox?: string;
+  observacaoNutricional?: string;
+}
+
+interface CardapioDoDiaProps {
+  refeicoes?: RefeicaoMock[] | null;
+  isLoading?: boolean;
+}
+
+export default function CardapioDoDia({ refeicoes, isLoading = false }: CardapioDoDiaProps) {
+  const [selectedTurno, setSelectedTurno] = useState<'todos' | 'diurno' | 'noturno'>('todos');
+
+  // Format today's date in pt-BR
+  const hoje = new Date();
+  const dataFormatada = hoje.toLocaleDateString('pt-BR', {
+    weekday: 'long',
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric'
+  });
+
+  // Dados mockados elegantes representativos de uma refeição oficial do PNAE/SED-SC
+  const mockDiurno: RefeicaoMock = {
+    turno: 'diurno',
+    pratoPrincipal: 'Arroz integral com feijão carioca e peito de frango ao molho de tomate natural',
+    acompanhamentos: ['Salada de alface e cenoura ralada com azeite', 'Farofa nutritiva de milho'],
+    sobremesaOuBebida: 'Fruta da época (Banana prata ou Maçã gala)',
+    caloriasAprox: '~480 kcal',
+    observacaoNutricional: 'Rico em fibras, ferro e proteínas de alto valor biológico.'
+  };
+
+  const mockNoturno: RefeicaoMock = {
+    turno: 'noturno',
+    pratoPrincipal: 'Macarronada à bolonhesa com carne moída de primeira e queijo ralado',
+    acompanhamentos: ['Salada de repolho roxo e tomate fresco'],
+    sobremesaOuBebida: 'Suco natural de uva integral e fruta',
+    caloriasAprox: '~520 kcal',
+    observacaoNutricional: 'Refeição balanceada adaptada para estudantes do período noturno e EJA.'
+  };
+
+  const dadosDiurno = refeicoes?.find(r => r.turno === 'diurno') || mockDiurno;
+  const dadosNoturno = refeicoes?.find(r => r.turno === 'noturno') || mockNoturno;
+
+  return (
+    <div className="space-y-6">
+      {/* Date Banner Card */}
+      <div className="bg-gradient-to-r from-[#00185f] to-[#002888] text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden text-left">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-2xl -mr-16 -mt-16 pointer-events-none" />
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1.5">
+            <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-amber-300">
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>Cardápio do Dia</span>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-extrabold capitalize font-display">
+              {dataFormatada}
+            </h2>
+            <p className="text-xs text-slate-200 font-medium flex items-center gap-1.5">
+              <Clock className="h-3.5 w-3.5 text-amber-300" />
+              <span>Cardápio planejado por nutricionistas da SED/SC</span>
+            </p>
+          </div>
+
+          {/* Quick Turno Filter */}
+          <div className="flex bg-black/20 backdrop-blur-md p-1 rounded-xl border border-white/10 text-xs font-bold self-start sm:self-auto">
+            <button
+              onClick={() => setSelectedTurno('todos')}
+              className={`px-3 py-1.5 rounded-lg transition-all ${selectedTurno === 'todos' ? 'bg-white text-[#00185f] shadow-sm' : 'text-white/80 hover:text-white'}`}
+            >
+              Todos
+            </button>
+            <button
+              onClick={() => setSelectedTurno('diurno')}
+              className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 ${selectedTurno === 'diurno' ? 'bg-white text-[#00185f] shadow-sm' : 'text-white/80 hover:text-white'}`}
+            >
+              <Sun className="h-3 w-3 text-amber-500" />
+              <span>Diurno</span>
+            </button>
+            <button
+              onClick={() => setSelectedTurno('noturno')}
+              className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 ${selectedTurno === 'noturno' ? 'bg-white text-[#00185f] shadow-sm' : 'text-white/80 hover:text-white'}`}
+            >
+              <Moon className="h-3 w-3 text-indigo-400" />
+              <span>Noturno</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {isLoading ? (
+        <div className="bg-slate-50 border border-slate-200 border-dashed rounded-3xl p-12 text-center space-y-3">
+          <Utensils className="h-10 w-10 text-slate-400 mx-auto animate-pulse" />
+          <h3 className="text-base font-bold text-slate-700">Carregando cardápio do dia...</h3>
+          <p className="text-xs text-slate-400">Consultando o banco de dados oficial de alimentação escolar.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+          {/* Card Turno Diurno */}
+          {(selectedTurno === 'todos' || selectedTurno === 'diurno') && (
+            <div className={`bg-white border-2 border-amber-200/80 rounded-3xl p-6 sm:p-7 shadow-sm flex flex-col justify-between transition-all hover:border-amber-400 hover:shadow-md ${selectedTurno === 'diurno' ? 'md:col-span-2' : ''}`}>
+              <div className="space-y-4">
+                {/* Badge & Turno */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-2.5 bg-amber-100 text-amber-700 rounded-2xl">
+                      <Sun className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-bold text-amber-700 uppercase tracking-wider block">Turnos Matutino & Vespertino</span>
+                      <h3 className="text-lg font-extrabold text-slate-900 font-display">Almoço & Lanche</h3>
+                    </div>
+                  </div>
+                  {dadosDiurno.caloriasAprox && (
+                    <span className="text-[11px] font-extrabold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200">
+                      {dadosDiurno.caloriasAprox}
+                    </span>
+                  )}
+                </div>
+
+                {/* Prato Principal */}
+                <div className="bg-amber-50/60 border border-amber-100 rounded-2xl p-4 space-y-1">
+                  <span className="text-[10px] font-extrabold text-amber-800 uppercase tracking-wide block">Prato Principal</span>
+                  <p className="text-sm font-bold text-slate-900 leading-relaxed">
+                    {dadosDiurno.pratoPrincipal}
+                  </p>
+                </div>
+
+                {/* Acompanhamentos */}
+                {dadosDiurno.acompanhamentos && dadosDiurno.acompanhamentos.length > 0 && (
+                  <div className="space-y-2">
+                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Guarnições & Saladas</span>
+                    <ul className="space-y-1.5 text-xs text-slate-700 font-medium">
+                      {dadosDiurno.acompanhamentos.map((acomp, idx) => (
+                        <li key={idx} className="flex items-center gap-2">
+                          <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                          <span>{acomp}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Sobremesa / Bebida */}
+                {dadosDiurno.sobremesaOuBebida && (
+                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <span className="font-bold text-slate-500">Sobremesa / Fruta:</span>
+                    <span className="font-extrabold text-slate-800">{dadosDiurno.sobremesaOuBebida}</span>
+                  </div>
+                )}
+              </div>
+
+              {dadosDiurno.observacaoNutricional && (
+                <div className="mt-5 pt-3 border-t border-slate-100 flex items-start gap-2 text-[11px] text-slate-500 font-medium">
+                  <Info className="h-3.5 w-3.5 text-amber-600 shrink-0 mt-0.5" />
+                  <span>{dadosDiurno.observacaoNutricional}</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Card Turno Noturno */}
+          {(selectedTurno === 'todos' || selectedTurno === 'noturno') && (
+            <div className={`bg-white border-2 border-indigo-200/80 rounded-3xl p-6 sm:p-7 shadow-sm flex flex-col justify-between transition-all hover:border-indigo-400 hover:shadow-md ${selectedTurno === 'noturno' ? 'md:col-span-2' : ''}`}>
+              <div className="space-y-4">
+                {/* Badge & Turno */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-2.5 bg-indigo-100 text-indigo-700 rounded-2xl">
+                      <Moon className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-bold text-indigo-700 uppercase tracking-wider block">Turno Noturno</span>
+                      <h3 className="text-lg font-extrabold text-slate-900 font-display">Jantar dos Estudantes</h3>
+                    </div>
+                  </div>
+                  {dadosNoturno.caloriasAprox && (
+                    <span className="text-[11px] font-extrabold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200">
+                      {dadosNoturno.caloriasAprox}
+                    </span>
+                  )}
+                </div>
+
+                {/* Prato Principal */}
+                <div className="bg-indigo-50/60 border border-indigo-100 rounded-2xl p-4 space-y-1">
+                  <span className="text-[10px] font-extrabold text-indigo-800 uppercase tracking-wide block">Prato Principal</span>
+                  <p className="text-sm font-bold text-slate-900 leading-relaxed">
+                    {dadosNoturno.pratoPrincipal}
+                  </p>
+                </div>
+
+                {/* Acompanhamentos */}
+                {dadosNoturno.acompanhamentos && dadosNoturno.acompanhamentos.length > 0 && (
+                  <div className="space-y-2">
+                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Guarnições & Saladas</span>
+                    <ul className="space-y-1.5 text-xs text-slate-700 font-medium">
+                      {dadosNoturno.acompanhamentos.map((acomp, idx) => (
+                        <li key={idx} className="flex items-center gap-2">
+                          <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                          <span>{acomp}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Sobremesa / Bebida */}
+                {dadosNoturno.sobremesaOuBebida && (
+                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <span className="font-bold text-slate-500">Sobremesa / Fruta:</span>
+                    <span className="font-extrabold text-slate-800">{dadosNoturno.sobremesaOuBebida}</span>
+                  </div>
+                )}
+              </div>
+
+              {dadosNoturno.observacaoNutricional && (
+                <div className="mt-5 pt-3 border-t border-slate-100 flex items-start gap-2 text-[11px] text-slate-500 font-medium">
+                  <Info className="h-3.5 w-3.5 text-indigo-600 shrink-0 mt-0.5" />
+                  <span>{dadosNoturno.observacaoNutricional}</span>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* PNAE Institutional Assurance Banner */}
+      <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-left">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-emerald-100 text-emerald-800 rounded-xl shrink-0">
+            <CheckCircle2 className="h-5 w-5" />
+          </div>
+          <div>
+            <span className="font-extrabold text-xs text-slate-900 block">Padrão Nutricional FNDE / PNAE</span>
+            <span className="text-[11px] text-slate-500 font-medium">
+              Alimentos frescos da agricultura familiar catarinense, sem adição de corantes e conservantes artificiais.
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
