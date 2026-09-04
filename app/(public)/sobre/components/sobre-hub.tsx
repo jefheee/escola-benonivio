@@ -136,15 +136,15 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
                         className="break-inside-avoid bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md hover:border-slate-800 transition-all duration-300 flex flex-col cursor-pointer group mb-6"
                       >
                         {firstImage && (
-                          <div className="relative overflow-hidden aspect-video bg-slate-100 border-b border-slate-150">
+                          <div className="relative overflow-hidden bg-slate-950 flex items-center justify-center border-b border-slate-100">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                               src={firstImage}
                               alt={item.titulo}
-                              className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:scale-103"
+                              className="w-full h-auto max-h-[380px] object-contain transition-transform duration-500 group-hover:scale-102"
                             />
                             {photoCount > 1 && (
-                              <span className="absolute bottom-3 right-3 bg-black/75 text-white text-[9px] font-extrabold px-2 py-0.5 rounded uppercase tracking-wider">
+                              <span className="absolute bottom-3 right-3 bg-black/75 backdrop-blur-sm text-white text-[9px] font-extrabold px-2 py-0.5 rounded uppercase tracking-wider">
                                 +{photoCount - 1} Fotos
                               </span>
                             )}
@@ -518,12 +518,12 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
 
             {/* Modal Image Slider */}
             {selectedPhotoItem.imagens && selectedPhotoItem.imagens.length > 0 ? (
-              <div className="h-72 sm:h-[420px] bg-slate-950 relative shrink-0 overflow-hidden flex items-center justify-center select-none">
+              <div className="h-[55vh] sm:h-[65vh] max-h-[620px] bg-slate-950 relative shrink-0 overflow-hidden flex items-center justify-center select-none">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={selectedPhotoItem.imagens[activePhotoIdx]}
                   alt={`${selectedPhotoItem.titulo} - ${activePhotoIdx + 1}`}
-                  className="max-w-full max-h-full object-contain grayscale hover:grayscale-0 transition-all duration-350"
+                  className="max-w-full max-h-full object-contain transition-all duration-300"
                 />
 
                 {/* Left Arrow */}

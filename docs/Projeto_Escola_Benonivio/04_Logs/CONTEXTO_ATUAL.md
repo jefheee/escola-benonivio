@@ -85,6 +85,9 @@
   - Substituição da validação rígida RFC-4122 do Zod (`z.string().uuid()`) por regex compatível com qualquer UUID padrão PostgreSQL (`UUID_REGEX` em `lib/sanitize.ts`). Isso corrigiu o erro de "ID Inválido" e "Invalid Input" em registros legados ou de seed (como o aviso do Calendário Escolar 2026).
   - Remoção de `window.location.reload()` das Server Actions e substituição por `router.refresh()` com atualizações de estado otimistas e `useEffect` de sincronização, eliminando o erro de crash "Application error: a client-side exception has occurred".
   - Verificação da tela inicial: quando nenhum aviso possui `destaque_home: true`, a seção inteira de Destaques (incluindo o container azul) fica 100% oculta.
+- [x] **Galeria de Memórias & Acervo Histórico (`app/(public)/sobre/components/sobre-hub.tsx`):**
+  - Removido o filtro em preto e branco (`grayscale`) dos cards da galeria e do modal de visualização ampliada, garantindo exibição com cores naturais em todos os dispositivos móveis e desktops.
+  - Removido o corte forçado (`aspect-video` e `object-cover`), substituído por enquadramento integral (`object-contain` com fundo escuro elegante e altura dinâmica), preservando o topo e a base completos das fotos e banners históricos.
 - [x] **Manual do Administrador & Documentação:**
   - `docs/Projeto_Escola_Benonivio/02_Wiki/MANUAL_ADMIN.md`: Guia de administração e documentação contínua.
 
