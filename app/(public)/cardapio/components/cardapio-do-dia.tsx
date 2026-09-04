@@ -3,17 +3,20 @@
 import { useState } from 'react';
 import { Sun, Moon, Utensils, Clock, CheckCircle2, Info, Sparkles } from 'lucide-react';
 
-interface RefeicaoMock {
+export interface RefeicaoItem {
+  id?: string;
+  data?: string;
   turno: 'diurno' | 'noturno';
-  pratoPrincipal: string;
-  acompanhamentos: string[];
+  descricao?: string;
+  pratoPrincipal?: string;
+  acompanhamentos?: string[];
   sobremesaOuBebida?: string;
   caloriasAprox?: string;
   observacaoNutricional?: string;
 }
 
 interface CardapioDoDiaProps {
-  refeicoes?: RefeicaoMock[] | null;
+  refeicoes?: RefeicaoItem[] | null;
   isLoading?: boolean;
 }
 
@@ -29,8 +32,8 @@ export default function CardapioDoDia({ refeicoes, isLoading = false }: Cardapio
     year: 'numeric'
   });
 
-  // Dados mockados elegantes representativos de uma refeição oficial do PNAE/SED-SC
-  const mockDiurno: RefeicaoMock = {
+  // Dados mockados elegantes caso o banco de dados ainda não tenha registros no dia
+  const mockDiurno: RefeicaoItem = {
     turno: 'diurno',
     pratoPrincipal: 'Arroz integral com feijão carioca e peito de frango ao molho de tomate natural',
     acompanhamentos: ['Salada de alface e cenoura ralada com azeite', 'Farofa nutritiva de milho'],
@@ -39,7 +42,7 @@ export default function CardapioDoDia({ refeicoes, isLoading = false }: Cardapio
     observacaoNutricional: 'Rico em fibras, ferro e proteínas de alto valor biológico.'
   };
 
-  const mockNoturno: RefeicaoMock = {
+  const mockNoturno: RefeicaoItem = {
     turno: 'noturno',
     pratoPrincipal: 'Macarronada à bolonhesa com carne moída de primeira e queijo ralado',
     acompanhamentos: ['Salada de repolho roxo e tomate fresco'],
@@ -48,8 +51,14 @@ export default function CardapioDoDia({ refeicoes, isLoading = false }: Cardapio
     observacaoNutricional: 'Refeição balanceada adaptada para estudantes do período noturno e EJA.'
   };
 
-  const dadosDiurno = refeicoes?.find(r => r.turno === 'diurno') || mockDiurno;
-  const dadosNoturno = refeicoes?.find(r => r.turno === 'noturno') || mockNoturno;
+  const itemDiurno = refeicoes?.find(r => r.turno === 'diurno');
+  const itemNoturno = refeicoes?.find(r => r.turno === 'noturno');
+
+  const dadosDiurno = itemDiurno || mockDiurno;
+  const dadosNoturno = itemNoturno || mockNoturno;
+
+  const isRealDiurno = Boolean(itemDiurno?.descricao);
+  const isRealNoturno = Boolean(itemNoturno?.descricao);
 
   return (
     <div className="space-y-6">
@@ -120,23 +129,29 @@ export default function CardapioDoDia({ refeicoes, isLoading = false }: Cardapio
                       <h3 className="text-lg font-extrabold text-slate-900 font-display">Almoço & Lanche</h3>
                     </div>
                   </div>
-                  {dadosDiurno.caloriasAprox && (
+                  {isRealDiurno ? (
+                    <span className="text-[10px] font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                      Sincronizado
+                    </span>
+                  ) : dadosDiurno.caloriasAprox ? (
                     <span className="text-[11px] font-extrabold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200">
                       {dadosDiurno.caloriasAprox}
                     </span>
-                  )}
+                  ) : null}
                 </div>
 
-                {/* Prato Principal */}
+                {/* Prato Principal ou Descrição Completa */}
                 <div className="bg-amber-50/60 border border-amber-100 rounded-2xl p-4 space-y-1">
-                  <span className="text-[10px] font-extrabold text-amber-800 uppercase tracking-wide block">Prato Principal</span>
+                  <span className="text-[10px] font-extrabold text-amber-800 uppercase tracking-wide block">
+                    {isRealDiurno ? 'Refeição do Dia (SED/SC)' : 'Prato Principal'}
+                  </span>
                   <p className="text-sm font-bold text-slate-900 leading-relaxed">
-                    {dadosDiurno.pratoPrincipal}
+                    {dadosDiurno.descricao || dadosDiurno.pratoPrincipal}
                   </p>
                 </div>
 
-                {/* Acompanhamentos */}
-                {dadosDiurno.acompanhamentos && dadosDiurno.acompanhamentos.length > 0 && (
+                {/* Acompanhamentos se houver formato estruturado */}
+                {!isRealDiurno && dadosDiurno.acompanhamentos && dadosDiurno.acompanhamentos.length > 0 && (
                   <div className="space-y-2">
                     <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Guarnições & Saladas</span>
                     <ul className="space-y-1.5 text-xs text-slate-700 font-medium">
@@ -150,8 +165,7 @@ export default function CardapioDoDia({ refeicoes, isLoading = false }: Cardapio
                   </div>
                 )}
 
-                {/* Sobremesa / Bebida */}
-                {dadosDiurno.sobremesaOuBebida && (
+                {!isRealDiurno && dadosDiurno.sobremesaOuBebida && (
                   <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
                     <span className="font-bold text-slate-500">Sobremesa / Fruta:</span>
                     <span className="font-extrabold text-slate-800">{dadosDiurno.sobremesaOuBebida}</span>
@@ -159,12 +173,12 @@ export default function CardapioDoDia({ refeicoes, isLoading = false }: Cardapio
                 )}
               </div>
 
-              {dadosDiurno.observacaoNutricional && (
-                <div className="mt-5 pt-3 border-t border-slate-100 flex items-start gap-2 text-[11px] text-slate-500 font-medium">
-                  <Info className="h-3.5 w-3.5 text-amber-600 shrink-0 mt-0.5" />
-                  <span>{dadosDiurno.observacaoNutricional}</span>
-                </div>
-              )}
+              <div className="mt-5 pt-3 border-t border-slate-100 flex items-start gap-2 text-[11px] text-slate-500 font-medium">
+                <Info className="h-3.5 w-3.5 text-amber-600 shrink-0 mt-0.5" />
+                <span>
+                  {dadosDiurno.observacaoNutricional || 'Cardápio nutricional fiscalizado pelo Conselho de Alimentação Escolar (CAE).'}
+                </span>
+              </div>
             </div>
           )}
 
@@ -183,23 +197,28 @@ export default function CardapioDoDia({ refeicoes, isLoading = false }: Cardapio
                       <h3 className="text-lg font-extrabold text-slate-900 font-display">Jantar dos Estudantes</h3>
                     </div>
                   </div>
-                  {dadosNoturno.caloriasAprox && (
+                  {isRealNoturno ? (
+                    <span className="text-[10px] font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                      Sincronizado
+                    </span>
+                  ) : dadosNoturno.caloriasAprox ? (
                     <span className="text-[11px] font-extrabold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200">
                       {dadosNoturno.caloriasAprox}
                     </span>
-                  )}
+                  ) : null}
                 </div>
 
-                {/* Prato Principal */}
+                {/* Prato Principal ou Descrição Completa */}
                 <div className="bg-indigo-50/60 border border-indigo-100 rounded-2xl p-4 space-y-1">
-                  <span className="text-[10px] font-extrabold text-indigo-800 uppercase tracking-wide block">Prato Principal</span>
+                  <span className="text-[10px] font-extrabold text-indigo-800 uppercase tracking-wide block">
+                    {isRealNoturno ? 'Refeição do Dia (SED/SC)' : 'Prato Principal'}
+                  </span>
                   <p className="text-sm font-bold text-slate-900 leading-relaxed">
-                    {dadosNoturno.pratoPrincipal}
+                    {dadosNoturno.descricao || dadosNoturno.pratoPrincipal}
                   </p>
                 </div>
 
-                {/* Acompanhamentos */}
-                {dadosNoturno.acompanhamentos && dadosNoturno.acompanhamentos.length > 0 && (
+                {!isRealNoturno && dadosNoturno.acompanhamentos && dadosNoturno.acompanhamentos.length > 0 && (
                   <div className="space-y-2">
                     <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Guarnições & Saladas</span>
                     <ul className="space-y-1.5 text-xs text-slate-700 font-medium">
@@ -213,8 +232,7 @@ export default function CardapioDoDia({ refeicoes, isLoading = false }: Cardapio
                   </div>
                 )}
 
-                {/* Sobremesa / Bebida */}
-                {dadosNoturno.sobremesaOuBebida && (
+                {!isRealNoturno && dadosNoturno.sobremesaOuBebida && (
                   <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
                     <span className="font-bold text-slate-500">Sobremesa / Fruta:</span>
                     <span className="font-extrabold text-slate-800">{dadosNoturno.sobremesaOuBebida}</span>
@@ -222,12 +240,12 @@ export default function CardapioDoDia({ refeicoes, isLoading = false }: Cardapio
                 )}
               </div>
 
-              {dadosNoturno.observacaoNutricional && (
-                <div className="mt-5 pt-3 border-t border-slate-100 flex items-start gap-2 text-[11px] text-slate-500 font-medium">
-                  <Info className="h-3.5 w-3.5 text-indigo-600 shrink-0 mt-0.5" />
-                  <span>{dadosNoturno.observacaoNutricional}</span>
-                </div>
-              )}
+              <div className="mt-5 pt-3 border-t border-slate-100 flex items-start gap-2 text-[11px] text-slate-500 font-medium">
+                <Info className="h-3.5 w-3.5 text-indigo-600 shrink-0 mt-0.5" />
+                <span>
+                  {dadosNoturno.observacaoNutricional || 'Cardápio nutricional adaptado para o turno noturno e EJA.'}
+                </span>
+              </div>
             </div>
           )}
         </div>

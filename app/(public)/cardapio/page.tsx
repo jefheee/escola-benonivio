@@ -28,8 +28,25 @@ async function getCardapios() {
   return (data || []) as CardapioDoc[];
 }
 
+async function getRefeicoesHoje() {
+  const supabase = createClient();
+  const hojeStr = new Date().toISOString().slice(0, 10);
+  const { data, error } = await supabase
+    .from('refeicoes')
+    .select('id, data, turno, descricao')
+    .eq('data', hojeStr);
+
+  if (error || !data) {
+    return null;
+  }
+  return data;
+}
+
 export default async function CardapioPage() {
-  const docs = await getCardapios();
+  const [docs, refeicoesHoje] = await Promise.all([
+    getCardapios(),
+    getRefeicoesHoje(),
+  ]);
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
@@ -52,7 +69,7 @@ export default async function CardapioPage() {
       </div>
 
       {/* Componente Interativo Cardápio do Dia (Mobile & Desktop) */}
-      <CardapioDoDia />
+      <CardapioDoDia refeicoes={refeicoesHoje} />
 
       {/* Seção Oficial de Cronogramas e PDFs da SED/SC */}
       <div className="space-y-6 pt-6 border-t border-slate-200 text-left">

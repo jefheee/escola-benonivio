@@ -124,8 +124,15 @@
   - Formalizado o "AI PDF Parser Workflow": a secretaria não fará digitação manual; apenas enviará o PDF da SED/SC. O backend (Server Action) aciona a LLM API (Google Gemini API ou Groq como fallback) para extrair o array JSON padronizado `[{ data: 'YYYY-MM-DD', turno: 'diurno'|'noturno', descricao: '...' }]` e gravar via bulk upsert no PostgreSQL.
   - DDL SQL completo com tabela `refeicoes`, tipo enum `tipo_turno_refeicao`, restrição única `(data, turno)`, índices e 4 políticas RLS (leitura pública e mutação restrita a autenticados).
   - Preparadas as variáveis de ambiente `AI_API_KEY`, `GEMINI_API_KEY` e `GROQ_API_KEY` em `.env.local` e blindadas no `lib/env-guard.ts` contra vazamentos no client-side.
+- [x] **Implementação do AI PDF Parser de Cardápios (`@google/generative-ai`):**
+  - Instalado o SDK oficial `@google/generative-ai` e implementada a Server Action `parseCardapioPDF(formData: FormData)` em `app/(admin)/dashboard/cardapio/actions.ts`.
+  - O modelo `gemini-1.5-flash` consome o arquivo PDF nativamente via `inlineData` (base64 com `application/pdf`) e extrai as refeições de cada dia útil em JSON estrito `[{ data: 'YYYY-MM-DD', turno: 'diurno' | 'noturno', descricao: '...' }]`.
+  - Provisionada a tabela `refeicoes` no Supabase PostgreSQL com tipo enum `tipo_turno_refeicao`, constraint de unicidade `(data, turno)` e políticas de Row Level Security (RLS) forçadas.
+  - Criada a interface administrativa completa em `app/(admin)/dashboard/cardapio/page.tsx` com `CardapioUploader` (seletor de arquivo, indicador de progresso de IA, mensagens de feedback) e `RefeicoesTabela` para conferência e exclusão pontual.
+  - Integrado o link de "Cardápio Escolar (IA)" na barra lateral do painel (`sidebar-nav.tsx`).
+  - Conectada a página pública `/cardapio` para ler e exibir em tempo real as refeições ativas do dia no componente `<CardapioDoDia />`.
 - [x] **Manual do Administrador & Documentação:**
-  - `docs/Projeto_Escola_Benonivio/02_Wiki/MANUAL_ADMIN.md`: Atualizado com as diretrizes de upload de imagens integrais e layout do mural.
+  - `docs/Projeto_Escola_Benonivio/02_Wiki/MANUAL_ADMIN.md`: Atualizado com as instruções de uso do novo módulo de Cardápio Inteligente com IA.
 
 ---
 
@@ -135,8 +142,8 @@
 | :--- | :--- | :--- | :--- |
 | **Embed / Player Podcast Spotify** | `SiteLegado_Grupo_Estudos.md` | **CONCLUÍDO** | Componente `<SpotifyEmbed />` implementado na rota `/acervo`. |
 | **Revista Okaza (Links & Regras)** | `SiteLegado_Revista_Okaza.md` | **CONCLUÍDO** | Componente `<RevistaOkazaCard />` implementado na rota `/acervo`. |
-| **Cardápio Digital & CardapioDoDia (UI)** | Requisito UX Mobile | **CONCLUÍDO (FASE 1)** | UI pública `/cardapio` implementada com cabeçalho PNAE e componente `<CardapioDoDia />`. |
-| **Automação de Leitura de PDF de Cardápio via IA (Backend)** | Mudança Arquitetural Aprovada | **ARQUITETURA DOCUMENTADA** | Schema SQL e workflow em `Supabase_Cardapio.md`, slots em `.env.local` e `lib/env-guard.ts`. Aguardando chave para execução do parser. |
+| **Cardápio Digital & CardapioDoDia (UI)** | Requisito UX Mobile | **CONCLUÍDO** | UI pública `/cardapio` implementada com cabeçalho PNAE e dados reais em `<CardapioDoDia />`. |
+| **Automação de Leitura de PDF de Cardápio via IA (Backend)** | Mudança Arquitetural Aprovada | **CONCLUÍDO** | Server Action `@google/generative-ai` com Gemini 1.5 Flash, upsert em `refeicoes` e UI de upload em `/dashboard/cardapio`. |
 | **Injeção de Dados do INEP/SAEB/Censo** | `Dossiê Histórico-Estatístico.md` & `Portal_SED_DadosOficiais.md` | Dados parciais em `/sobre` | Próxima sprint: expandir `/sobre` com tabela histórica de proficiência SAEB/IDEB. |
 | **Feed / Widget API Instagram** | `Mapeamento_Turmas_WhatsApp.md` & Dossiê | Apenas link externo | Widget/Feed do `@escolabenonivio` pendente de token de API. |
 | **Iniciativas Estudantis (Grupo Butterfly & COM-VIDA)** | `SiteLegado_Grupo_Butterfly.md` | Não detalhado | Adicionar seção de "Projetos Estudantis" em `/sobre`. |
