@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, ChangeEvent } from 'react';
-import { createClient } from '@/lib/supabase/client';
+import { uploadMediaAction } from '@/app/(admin)/dashboard/actions/upload';
 import { Check, Loader2, RefreshCw, X, Upload } from 'lucide-react';
 import { validateAndSanitizeFile, validateImageDimensions } from '@/lib/storage-security';
 
@@ -140,34 +140,24 @@ export default function ImageCropper({
       }
 
       try {
-        const supabase = createClient();
-        
-        // Construct secure sanitized storage path
-        const filePath = folderName ? `${folderName}/${sanitizedFilename}` : sanitizedFilename;
+        const formData = new FormData();
+        // Since canvas exports as JPEG, pass filename with .jpg
+        formData.append('file', blob, 'imagem-aviso.jpg');
+        formData.append('bucketName', bucketName);
+        formData.append('folderName', folderName);
+        formData.append('category', 'image');
 
-        // Upload to storage with strict MIME type and cache settings
-        const { data, error } = await supabase.storage
-          .from(bucketName)
-          .upload(filePath, blob, {
-            contentType: 'image/jpeg',
-            cacheControl: '3600',
-            upsert: false
-          });
+        const res = await uploadMediaAction(formData);
 
-        if (error) {
-          throw new Error(error.message);
+        if (!res.success || !res.url) {
+          throw new Error(res.error || 'Falha ao enviar imagem.');
         }
 
-        // Get public URL
-        const { data: { publicUrl } } = supabase.storage
-          .from(bucketName)
-          .getPublicUrl(data.path);
-
-        onUploadSuccess(publicUrl);
+        onUploadSuccess(res.url);
         handleClose();
       } catch (err: unknown) {
         console.error('[STORAGE SECURITY ERROR] Upload de imagem falhou:', err);
-        alert('Falha ao enviar imagem. Verifique o arquivo e tente novamente.');
+        alert(err instanceof Error ? err.message : 'Falha ao enviar imagem. Verifique o arquivo e tente novamente.');
       } finally {
         setIsUploading(false);
       }

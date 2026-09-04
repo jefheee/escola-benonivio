@@ -58,31 +58,7 @@ export default function ServicosGrid() {
           </div>
         </a>
 
-        {/* Card 2: Matrícula Online */}
-        <div
-          onClick={openModal}
-          className="bg-white border border-slate-250 hover:border-slate-900 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 group flex flex-col justify-between h-[210px] cursor-pointer outline-none"
-        >
-          <div className="space-y-4">
-            <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-800 group-hover:scale-105 transition-transform shrink-0">
-              <UserPlus className="h-6 w-6" />
-            </div>
-            <div className="space-y-1.5">
-              <h3 className="font-bold text-slate-900 text-base">
-                Matrícula Online 2026
-              </h3>
-              <p className="text-slate-500 text-xs font-semibold leading-relaxed line-clamp-3">
-                Saiba como funciona o processo de matrícula e transferência da rede pública estadual de Santa Catarina.
-              </p>
-            </div>
-          </div>
-          <div className="text-[10px] font-bold text-slate-400 group-hover:text-slate-900 transition-colors uppercase tracking-wider flex items-center gap-1">
-            <span>Ver orientações</span>
-            <span>→</span>
-          </div>
-        </div>
-
-        {/* Card 3: Professor Online */}
+        {/* Card 2: Professor Online */}
         <a
           href="https://professoronline.sed.sc.gov.br/"
           target="_blank"
@@ -108,6 +84,30 @@ export default function ServicosGrid() {
             <span>→</span>
           </div>
         </a>
+
+        {/* Card 3: Matrícula Online */}
+        <div
+          onClick={openModal}
+          className="bg-white border border-slate-250 hover:border-slate-900 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 group flex flex-col justify-between h-[210px] cursor-pointer outline-none"
+        >
+          <div className="space-y-4">
+            <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-800 group-hover:scale-105 transition-transform shrink-0">
+              <UserPlus className="h-6 w-6" />
+            </div>
+            <div className="space-y-1.5">
+              <h3 className="font-bold text-slate-900 text-base">
+                Matrícula Online 2026
+              </h3>
+              <p className="text-slate-500 text-xs font-semibold leading-relaxed line-clamp-3">
+                Saiba como funciona o processo de matrícula e transferência da rede pública estadual de Santa Catarina.
+              </p>
+            </div>
+          </div>
+          <div className="text-[10px] font-bold text-slate-400 group-hover:text-slate-900 transition-colors uppercase tracking-wider flex items-center gap-1">
+            <span>Ver orientações</span>
+            <span>→</span>
+          </div>
+        </div>
 
         {/* Card 4: Cardápio Escolar */}
         <Link

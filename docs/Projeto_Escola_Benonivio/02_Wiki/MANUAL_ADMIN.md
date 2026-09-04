@@ -58,13 +58,14 @@ Para comunicar suspensão de aulas por chuvas, reuniões de pais ou eventos comu
 ### Passo a passo:
 1. No menu lateral, clique em **"Mural de Avisos"** (`/dashboard/avisos`).
 2. Clique em **"+ Criar Aviso"**.
-3. Preencha o **Título** e a **Mensagem**.
-4. Escolha o nível de **Prioridade**:
-   - 🟢 **Informativo / Geral:** Reuniões rotineiras e lembretes gerais.
-   - 🟡 **Importante:** Prazos de rematrícula e entregas de notas.
-   - 🔴 **Urgente / Alerta:** Avisos imediatos e cancelamentos de emergência.
-5. Se quiser destaque especial na página inicial, marque **"Fixar no topo"**.
-6. Clique em **"Publicar Aviso"**.
+3. Preencha o **Título**, o **Resumo** e o **Conteúdo Completo**.
+   - 🔗 **Links e Sites Automáticos:** Qualquer link colado no texto (ex: `https://www.sed.sc.gov.br/...` ou `www.sc.gov.br`) será automaticamente detectado pelo site público e transformado em um link azul clicável que abre em uma nova aba com segurança.
+4. **Adicionar Imagens:**
+   - Clique em **"Adicionar Imagem de Capa"** para selecionar fotos do seu computador (PNG, JPG, WebP).
+   - O sistema abrirá o painel **"Recortar e Ajustar Imagem"**, permitindo enquadrar e centralizar a imagem perfeitamente antes de enviar.
+   - O upload é processado diretamente pelos servidores seguros da escola, aceitando imagens de alta resolução sem erros.
+5. Se desejar, marque **"Destacar na Página Inicial"** para exibir no carrossel de destaques da Home.
+6. Clique em **"Salvar Aviso"**.
 
 ---
 

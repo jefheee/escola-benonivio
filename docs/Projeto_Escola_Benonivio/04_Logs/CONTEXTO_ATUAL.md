@@ -1,7 +1,7 @@
 # 📌 CONTEXTO ATUAL DO PROJETO - EEB PROFESSOR BENONÍVIO JOÃO MARTINS
 
-**Última Atualização:** 03 de Setembro de 2026  
-**Status do Projeto:** Em Produção / Blindagem de Segurança 100% Concluída (12/12 Diretivas Enterprise)  
+**Última Atualização:** 04 de Setembro de 2026  
+**Status do Projeto:** Em Produção / Blindagem de Segurança 100% Concluída & Correções de Layout/Upload Ativas  
 **Arquitetura:** Docs as Code (Fonte de Verdade)
 
 ---
@@ -88,8 +88,25 @@
 - [x] **Galeria de Memórias & Acervo Histórico (`app/(public)/sobre/components/sobre-hub.tsx`):**
   - Removido o filtro em preto e branco (`grayscale`) dos cards da galeria e do modal de visualização ampliada, garantindo exibição com cores naturais em todos os dispositivos móveis e desktops.
   - Removido o corte forçado (`aspect-video` e `object-cover`), substituído por enquadramento integral (`object-contain` com fundo escuro elegante e altura dinâmica), preservando o topo e a base completos das fotos e banners históricos.
+- [x] **Upload de Mídias via Server Action Corporativa (`app/(admin)/dashboard/actions/upload.ts`):**
+  - Implementada a Server Action `uploadMediaAction(formData: FormData)` que roda no servidor Next.js com sessão protegida autoritativa (`supabase.auth.getUser()`).
+  - Substituído o envio client-side em `ImageCropper` e `DocumentosManager`, eliminando o erro de RLS ("Falha ao enviar imagem. Verifique o arquivo e tente novamente.") que ocorria ao subir arquivos como PNG 725x1024.
+  - Normalizada a extensão do canvas para `.jpg` para manter estrita paridade com o blob `image/jpeg`.
+  - Restauradas as opções padrões gerenciadas pelo `@supabase/ssr` em `middleware.ts` e `lib/supabase/server.ts`.
+- [x] **Correção da Borda Branca no Header e Desacoplamento de Pop-ups (`createPortal`):**
+  - Migrado o modal de avisos (`avisos-list.tsx`, `avisos-carousel.tsx`) e da galeria histórica (`sobre-hub.tsx`) para React Portal anexado a `document.body` com `z-[9999]`.
+  - Implementado bloqueio de rolagem do fundo (`document.body.style.overflow = 'hidden'`) enquanto o modal estiver aberto.
+  - Eliminado o corte horizontal do backdrop que deixava os 16px/37px superiores do header visíveis como uma borda branca grossa.
+- [x] **Reconhecimento Automático de Hiperlinks em Textos (`components/ui/formatted-text.tsx`):**
+  - Criado o componente `<FormattedText />` com parser regex que detecta automaticamente URLs (`http://`, `https://`, `www.`), separa pontuações anexadas e renderiza hiperlinks azuis institucionais clicáveis (`target="_blank" rel="noopener noreferrer"`).
+  - Aplicado no conteúdo e resumo de avisos, posts de turmas e acervo histórico.
+- [x] **Reorganização de Serviços & Portais Governamentais (`app/(public)/components/servicos-grid.tsx`):**
+  - Card do "Professor Online" reposicionado para a 2ª posição, imediatamente ao lado de "Estudante Online" (Estudante Online, Professor Online, Matrícula Online, Cardápio).
+- [x] **Restauração e Encaixe do Google Maps Responsivo (`next.config.mjs` & `sobre-hub.tsx`):**
+  - Liberado `frame-src 'self' https://www.google.com https://www.google.com.br https://open.spotify.com;` na Content Security Policy (CSP), resolvendo o bloqueio de iframes externos do Google Maps e Spotify.
+  - Atualizado o embed do Google Maps da escola com o novo código e proporção responsiva 600x450 (4:3) adaptável (altura dinâmica `h-72 sm:h-80`), título acessível e `strict-origin-when-cross-origin`.
 - [x] **Manual do Administrador & Documentação:**
-  - `docs/Projeto_Escola_Benonivio/02_Wiki/MANUAL_ADMIN.md`: Guia de administração e documentação contínua.
+  - `docs/Projeto_Escola_Benonivio/02_Wiki/MANUAL_ADMIN.md`: Atualizado com as diretrizes de upload blindado e hiperlinks automáticos.
 
 ---
 

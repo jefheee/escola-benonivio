@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useFormState, useFormStatus } from 'react-dom';
 import { Plus, Search, Edit2, Trash2, X, AlertCircle, CheckCircle2, FileText, ExternalLink, UploadCloud } from 'lucide-react';
 import { EscolaDocumento, saveDocumento, deleteDocumento } from '../actions';
-import { createClient } from '@/lib/supabase/client';
+import { uploadMediaAction } from '@/app/(admin)/dashboard/actions/upload';
 import { validateAndSanitizeFile } from '@/lib/storage-security';
 
 interface ManagerProps {
@@ -101,30 +101,23 @@ export default function DocumentosManager({ initialDocs }: ManagerProps) {
       setIsUploading(true);
 
       try {
-        const supabase = createClient();
-        const filePath = `documentos/${valResult.sanitizedFilename}`;
+        const formData = new FormData();
+        formData.append('file', file, file.name);
+        formData.append('bucketName', 'escola_midias');
+        formData.append('folderName', 'documentos');
+        formData.append('category', 'document');
 
-        const { data, error } = await supabase.storage
-          .from('escola_midias')
-          .upload(filePath, file, {
-            contentType: valResult.mimeType,
-            cacheControl: '3600',
-            upsert: false
-          });
+        const res = await uploadMediaAction(formData);
 
-        if (error) {
-          throw error;
+        if (!res.success || !res.url) {
+          throw new Error(res.error || 'Falha no upload do documento.');
         }
 
-        const { data: { publicUrl } } = supabase.storage
-          .from('escola_midias')
-          .getPublicUrl(data.path);
-
-        setFileUrl(publicUrl);
+        setFileUrl(res.url);
         showFeedback('success', 'Arquivo carregado com sucesso!');
       } catch (err: unknown) {
         console.error('[STORAGE SECURITY ERROR] Upload do documento falhou:', err);
-        showFeedback('error', 'Falha no upload do arquivo. Verifique o tamanho e formato.');
+        showFeedback('error', err instanceof Error ? err.message : 'Falha no upload do arquivo. Verifique o tamanho e formato.');
       } finally {
         setIsUploading(false);
       }

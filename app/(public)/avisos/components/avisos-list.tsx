@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Megaphone, Calendar, X } from 'lucide-react';
 import { EscolaAvisoPublic } from '@/lib/data/avisos';
+import FormattedText from '@/components/ui/formatted-text';
 
 interface AvisosListProps {
   initialAvisos: EscolaAvisoPublic[];
@@ -10,6 +12,22 @@ interface AvisosListProps {
 
 export default function AvisosList({ initialAvisos }: AvisosListProps) {
   const [selectedAviso, setSelectedAviso] = useState<EscolaAvisoPublic | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (selectedAviso) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [selectedAviso]);
 
   return (
     <div className="space-y-8">
@@ -79,9 +97,15 @@ export default function AvisosList({ initialAvisos }: AvisosListProps) {
       )}
 
       {/* Modal Details */}
-      {selectedAviso && (
-        <div className="fixed inset-0 z-[150] bg-black/55 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl border border-slate-100 w-full max-w-2xl overflow-hidden max-h-[85vh] flex flex-col text-left animate-scaleIn">
+      {selectedAviso && mounted && createPortal(
+        <div 
+          className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-[2px] flex items-center justify-center p-4 overflow-y-auto"
+          onClick={() => setSelectedAviso(null)}
+        >
+          <div 
+            className="bg-white rounded-2xl shadow-2xl border border-slate-100 w-full max-w-2xl overflow-hidden max-h-[85vh] flex flex-col text-left relative z-[10000] my-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Image Header with Multi-image carousel support */}
             {selectedAviso.imagens && selectedAviso.imagens.length > 0 ? (
               <div className="h-60 shrink-0 relative overflow-hidden bg-slate-900 flex gap-2 overflow-x-auto snap-x snap-mandatory">
@@ -138,13 +162,13 @@ export default function AvisosList({ initialAvisos }: AvisosListProps) {
               </h2>
 
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm font-semibold text-slate-600 leading-relaxed">
-                {selectedAviso.resumo}
+                <FormattedText text={selectedAviso.resumo} />
               </div>
 
               {/* Full Content */}
               {selectedAviso.conteudo && (
-                <div className="text-slate-700 text-sm leading-relaxed space-y-3 whitespace-pre-wrap pt-2 border-t border-slate-100">
-                  {selectedAviso.conteudo}
+                <div className="text-slate-700 text-sm leading-relaxed space-y-3 pt-2 border-t border-slate-100">
+                  <FormattedText text={selectedAviso.conteudo} />
                 </div>
               )}
             </div>
@@ -159,7 +183,8 @@ export default function AvisosList({ initialAvisos }: AvisosListProps) {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

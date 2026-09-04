@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import {
   History as HistoryIcon,
@@ -20,6 +21,7 @@ import {
 import { EscolaDocumentoPublic } from '@/lib/data/documentos';
 import { EscolaAcervoItemPublic } from '@/lib/data/acervo';
 import { SCHOOL_INFO } from '@/lib/constants';
+import FormattedText from '@/components/ui/formatted-text';
 
 interface SobreHubProps {
   documentos: EscolaDocumentoPublic[];
@@ -32,6 +34,22 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
   const [activeTab, setActiveTab] = useState<TabType>('historico');
   const [selectedPhotoItem, setSelectedPhotoItem] = useState<EscolaAcervoItemPublic | null>(null);
   const [activePhotoIdx, setActivePhotoIdx] = useState<number>(0);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (selectedPhotoItem) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [selectedPhotoItem]);
 
   // Filter documents
   const pppDocs = documentos.filter(doc => {
@@ -438,16 +456,16 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
                   </p>
                 </div>
 
-                <div className="w-full h-44 rounded-2xl overflow-hidden border border-slate-200 shadow-inner">
+                <div className="w-full h-72 sm:h-80 rounded-2xl overflow-hidden border border-slate-200 shadow-inner">
                   <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1767.54989144233!2d-48.667191048476354!3d-27.621426117409058!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9527358fbaaaaaab%3A0xa4a4e87166b392b7!2sEeb%20Prof%20Benonivio%20Joao%20Martins!5e0!3m2!1spt-BR!2sbr!4v1779936658693!5m2!1spt-BR!2sbr"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3535.099399256199!2d-48.6671079!3d-27.621437999999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9527358fbaaaaaab%3A0xa4a4e87166b392b7!2sEeb%20Prof%20Benonivio%20Joao%20Martins!5e0!3m2!1spt-BR!2sbr!4v1788501007321!5m2!1spt-BR!2sbr"
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}
                     allowFullScreen
                     loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    title="Mapa da Escola"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    title="Localização da EEB Professor Benonívio João Martins no Google Maps"
                   ></iframe>
                 </div>
               </div>
@@ -512,9 +530,15 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
       </div>
 
       {/* Image Gallery Viewer Modal */}
-      {selectedPhotoItem && (
-        <div className="fixed inset-0 z-[150] bg-black/85 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-2xl w-full max-w-3xl overflow-hidden max-h-[90vh] flex flex-col text-left animate-scaleIn">
+      {selectedPhotoItem && mounted && createPortal(
+        <div 
+          className="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-[2px] flex items-center justify-center p-4 overflow-y-auto"
+          onClick={() => setSelectedPhotoItem(null)}
+        >
+          <div 
+            className="bg-white rounded-2xl border border-slate-100 shadow-2xl w-full max-w-3xl overflow-hidden max-h-[90vh] flex flex-col text-left relative z-[10000] my-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
 
             {/* Modal Image Slider */}
             {selectedPhotoItem.imagens && selectedPhotoItem.imagens.length > 0 ? (
@@ -575,9 +599,9 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
               </h2>
 
               {selectedPhotoItem.descricao && (
-                <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-wrap pt-2.5 border-t border-slate-100 font-medium">
-                  {selectedPhotoItem.descricao}
-                </p>
+                <div className="text-slate-600 text-sm leading-relaxed pt-2.5 border-t border-slate-100 font-medium">
+                  <FormattedText text={selectedPhotoItem.descricao} />
+                </div>
               )}
             </div>
 
@@ -591,7 +615,8 @@ export default function SobreHub({ documentos, fotosHistoricas }: SobreHubProps)
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ChevronLeft, MessageSquare, ExternalLink, Calendar, Megaphone, Link2 } from 'lucide-react';
 import { getTurmaByIdPublic, getTurmaPostsPublic } from '@/lib/data/turmas';
+import FormattedText from '@/components/ui/formatted-text';
 
 export const dynamic = 'force-dynamic';
 
@@ -151,9 +152,9 @@ export default async function TurmaDetailPage({ params }: PageProps) {
                     </h4>
 
                     {post.conteudo && (
-                      <p className="text-slate-600 text-xs leading-relaxed whitespace-pre-wrap">
-                        {post.conteudo}
-                      </p>
+                      <div className="text-slate-600 text-xs leading-relaxed">
+                        <FormattedText text={post.conteudo} />
+                      </div>
                     )}
 
                     {post.imagem_url && (
