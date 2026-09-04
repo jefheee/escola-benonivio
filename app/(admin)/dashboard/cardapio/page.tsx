@@ -21,7 +21,7 @@ export default async function DashboardCardapioPage() {
             Cardápio Inteligente com IA
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 font-medium">
-            Ingestão automatizada de cardápios mensais através da API do Google Gemini 1.5 Flash.
+            Ingestão automatizada de cardápios mensais através da API do Google Gemini 2.5 Flash.
           </p>
         </div>
 

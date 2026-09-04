@@ -44,14 +44,14 @@ export default function AvisosList({ initialAvisos }: AvisosListProps) {
                 onClick={() => setSelectedAviso(aviso)}
                 className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-subtle flex flex-col justify-between cursor-pointer group hover:border-[#00185f] hover:shadow-md transition-all relative h-full"
               >
-                {/* Card Image */}
-                <div className="bg-slate-100/70 relative overflow-hidden flex items-center justify-center border-b border-slate-100 h-56 w-full">
+                {/* Card Image com Aspect Ratio Fixo e Sem Cortes */}
+                <div className="aspect-video w-full bg-slate-50 relative overflow-hidden flex items-center justify-center border-b border-slate-100">
                   {firstImage ? (
                     /* eslint-disable-next-line @next/next/no-img-element */
                     <img
                       src={firstImage}
                       alt={aviso.titulo}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-300"
                     />
                   ) : (
                     <div className="flex flex-col items-center justify-center text-slate-400 gap-2 p-6 text-center w-full">

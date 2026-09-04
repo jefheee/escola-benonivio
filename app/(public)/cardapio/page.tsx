@@ -30,14 +30,21 @@ async function getCardapios() {
 
 async function getRefeicoesHoje() {
   const supabase = createClient();
-  const hojeStr = new Date().toISOString().slice(0, 10);
+  // Formatar data no fuso oficial de SC/Brasil (America/Sao_Paulo: YYYY-MM-DD)
+  const hojeStr = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Sao_Paulo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date());
+
   const { data, error } = await supabase
     .from('refeicoes')
     .select('id, data, turno, descricao')
     .eq('data', hojeStr);
 
   if (error || !data) {
-    return null;
+    return [];
   }
   return data;
 }

@@ -280,36 +280,38 @@ export default function AvisosManager({ initialNotices }: ManagerProps) {
           {/* Table List Card */}
           <div className="bg-white border border-slate-200 rounded-2xl shadow-subtle overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse min-w-[850px]">
+              <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-100">
                     <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Aviso</th>
                     {activeTab === 'ativos' && (
                       <>
-                        <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center whitespace-nowrap">Status</th>
-                        <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center whitespace-nowrap">Destaque na Home</th>
-                        <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center whitespace-nowrap">Publicado</th>
+                        <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Status</th>
+                        <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Destaque na Home</th>
+                        <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Publicado</th>
                       </>
                     )}
-                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">Data de Publicação</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right whitespace-nowrap">Ações</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Data de Publicação</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Ações</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
                   {filteredNotices.length > 0 ? (
                     filteredNotices.map((notice) => (
                       <tr key={notice.id} className="hover:bg-slate-50/50 transition-colors">
-                        {/* Notice Title & Summary */}
-                        <td className="px-6 py-4 max-w-sm">
-                          <div className="font-bold text-slate-900 truncate flex items-center gap-2">
+                        {/* Notice Title & Summary com quebra natural */}
+                        <td className="px-6 py-4">
+                          <div className="font-bold text-slate-900 flex flex-wrap items-center gap-2 leading-snug">
                             <span>{notice.titulo}</span>
                             {((notice.imagens as string[])?.length || (notice.imagem_url ? 1 : 0)) > 1 && (
-                              <span className="bg-[#00185f]/10 text-[#00185f] text-[9px] font-extrabold px-1.5 py-0.5 rounded">
+                              <span className="bg-[#00185f]/10 text-[#00185f] text-[9px] font-extrabold px-1.5 py-0.5 rounded shrink-0">
                                 +{(notice.imagens as string[]).length} fotos
                               </span>
                             )}
                           </div>
-                          <div className="text-xs text-slate-500 truncate mt-0.5">{notice.resumo}</div>
+                          {notice.resumo && (
+                            <div className="text-xs text-slate-500 mt-1 leading-relaxed">{notice.resumo}</div>
+                          )}
                         </td>
 
                         {activeTab === 'ativos' && (
@@ -368,7 +370,7 @@ export default function AvisosManager({ initialNotices }: ManagerProps) {
                         </td>
 
                         {/* Actions */}
-                        <td className="px-6 py-4 text-right whitespace-nowrap">
+                        <td className="px-6 py-4 text-right">
                           <div className="flex items-center justify-end gap-2">
                             {activeTab === 'ativos' ? (
                               <>

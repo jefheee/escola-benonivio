@@ -104,14 +104,14 @@ export default function AvisosCarousel({ avisos }: AvisosCarouselProps) {
               onClick={() => setSelectedAviso(aviso)}
               className="w-[290px] sm:w-[370px] shrink-0 snap-start bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between cursor-pointer group hover:border-amber-400 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 h-[380px]"
             >
-              {/* Card Image */}
-              <div className="h-44 bg-slate-100/70 relative shrink-0 overflow-hidden flex items-center justify-center border-b border-slate-100">
+              {/* Card Image com Aspect Ratio Fixo e Sem Cortes */}
+              <div className="aspect-video w-full bg-slate-50 relative shrink-0 overflow-hidden flex items-center justify-center border-b border-slate-100">
                 {firstImage ? (
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img
                     src={firstImage}
                     alt={aviso.titulo}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                    className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500 ease-out"
                   />
                 ) : (
                   <div className="flex flex-col items-center justify-center text-slate-400 gap-2 p-6 text-center w-full h-full bg-gradient-to-br from-slate-50 to-slate-100/50">

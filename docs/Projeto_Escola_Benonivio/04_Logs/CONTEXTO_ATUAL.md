@@ -124,17 +124,16 @@
   - Formalizado o "AI PDF Parser Workflow": a secretaria não fará digitação manual; apenas enviará o PDF da SED/SC. O backend (Server Action) aciona a LLM API (Google Gemini API ou Groq como fallback) para extrair o array JSON padronizado `[{ data: 'YYYY-MM-DD', turno: 'diurno'|'noturno', descricao: '...' }]` e gravar via bulk upsert no PostgreSQL.
   - DDL SQL completo com tabela `refeicoes`, tipo enum `tipo_turno_refeicao`, restrição única `(data, turno)`, índices e 4 políticas RLS (leitura pública e mutação restrita a autenticados).
   - Preparadas as variáveis de ambiente `AI_API_KEY`, `GEMINI_API_KEY` e `GROQ_API_KEY` em `.env.local` e blindadas no `lib/env-guard.ts` contra vazamentos no client-side.
-- [x] **Implementação & Correção da API do Gemini para Cardápios (`@google/generative-ai`):**
-  - Identificada e solucionada a causa do erro 404: o modelo legado `gemini-1.5-flash` foi descontinuado na API v1beta do Google. Atualizado o endpoint para utilizar os modelos modernos estáveis `gemini-2.5-flash` (prioritário) com fallback resiliente para `gemini-3.5-flash` e `gemini-2.5-flash-lite`, além de suporte a `process.env.GEMINI_MODEL`.
-  - Estrutura de envio do PDF mantida rigorosamente com `inlineData` (`mimeType: 'application/pdf'` e `data: base64Data`). Testada e validada com extração de JSON em tempo real.
-  - Tabela `refeicoes` no Supabase com tipo enum `tipo_turno_refeicao`, constraint `(data, turno)` e RLS ativas.
-  - Interface administrativa completa em `/dashboard/cardapio` e página pública `/cardapio` conectada em tempo real.
-- [x] **Correções de UI/UX no Mural de Avisos e Tabelas Administrativas:**
-  - **Body Scroll Lock:** Implementada trava de rolagem com `document.body.style.overflow = 'hidden'` durante a abertura do modal e restauração imediata para `'unset'` ao fechar (tanto em `/avisos` quanto no carrossel de destaques da Home).
-  - **Aspect Ratio dos Cards de Avisos:** Substituído `object-contain` por `w-full h-full object-cover` nos cards do mural (Home e página `/avisos`), preenchendo 100% do container sem deixar faixas de fundo cinza, independentemente do formato da imagem.
-  - **Overflow Horizontal das Tabelas Administrativas:** Adicionados `overflow-x-auto`, `min-w-[850px]` e `whitespace-nowrap` nas tabelas de gestão (`avisos-manager.tsx`, `refeicoes-tabela.tsx`, `turmas-manager.tsx`, `documentos-manager.tsx`, `acervo-manager.tsx`), eliminando o corte dos botões de ação ("Editar", "Excluir", "Restaurar") em telas menores ou com barra lateral visível.
+- [x] **Implementação, Deduplicação & Correção da API do Gemini para Cardápios (`@google/generative-ai`):**
+  - Identificada e solucionada a causa do erro 404: o modelo legado `gemini-1.5-flash` foi descontinuado na API v1beta do Google. Atualizado o endpoint e todos os textos da interface administrativa para o modelo estável `Google Gemini 2.5 Flash` (com fallback automático para `gemini-3.5-flash` e `gemini-2.5-flash-lite`).
+  - **Deduplicação de Lotes via `reduce`:** Resolvido o erro crítico do PostgreSQL (`ON CONFLICT DO UPDATE command cannot affect row a second time`). Implementada sanitização prévia no array retornado pela IA que unifica o par `(data, turno)` preservando a última ocorrência antes do bulk `upsert`.
+  - **CRUD Completo de Refeições no Painel Admin:** Componente `RefeicoesTabela` expandido com modal de edição (`updateRefeicaoAction`), modal de cadastro manual (`createRefeicaoAction`), filtro por mês letivo (`todos` ou meses detectados) e campo de busca em tempo real.
+  - **Rota Pública `/cardapio` Conectada ao Supabase:** Eliminados todos os dados mockados/hardcoded de `<CardapioDoDia />`. Conexão direta com a tabela `refeicoes` para a data de hoje no fuso horário oficial de SC (`America/Sao_Paulo`), com aviso amigável para fins de semana, recessos ou ausência temporária de cardápio.
+- [x] **Ajustes de UI/UX e Responsividade das Tabelas:**
+  - **Imagens do Mural 100% Íntegras sem Cortes:** Aplicado container com proporção fixa `aspect-video`, fundo suave `bg-slate-50` e imagem em `object-contain p-2` nos cards de avisos (Home e página `/avisos`). Cartazes e fotos verticais ou horizontais são preservados integralmente sem cortes de texto.
+  - **Remoção de Scroll Horizontal nas Tabelas Admin:** Removidas as classes `min-w-[850px]` e `whitespace-nowrap` em `avisos-manager.tsx` e `acervo-manager.tsx`. Títulos e resumos agora quebram linha naturalmente ocupando 100% da largura do contêiner sem exigir rolagem horizontal em telas de desktop ou laptops.
 - [x] **Manual do Administrador & Documentação:**
-  - `docs/Projeto_Escola_Benonivio/02_Wiki/MANUAL_ADMIN.md`: Atualizado com as instruções de uso do novo módulo de Cardápio Inteligente com IA.
+  - `docs/Projeto_Escola_Benonivio/02_Wiki/MANUAL_ADMIN.md`: Atualizado com as instruções de uso do novo módulo de Cardápio Inteligente com IA e edição manual.
 
 ---
 

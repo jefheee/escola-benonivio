@@ -32,33 +32,10 @@ export default function CardapioDoDia({ refeicoes, isLoading = false }: Cardapio
     year: 'numeric'
   });
 
-  // Dados mockados elegantes caso o banco de dados ainda não tenha registros no dia
-  const mockDiurno: RefeicaoItem = {
-    turno: 'diurno',
-    pratoPrincipal: 'Arroz integral com feijão carioca e peito de frango ao molho de tomate natural',
-    acompanhamentos: ['Salada de alface e cenoura ralada com azeite', 'Farofa nutritiva de milho'],
-    sobremesaOuBebida: 'Fruta da época (Banana prata ou Maçã gala)',
-    caloriasAprox: '~480 kcal',
-    observacaoNutricional: 'Rico em fibras, ferro e proteínas de alto valor biológico.'
-  };
-
-  const mockNoturno: RefeicaoItem = {
-    turno: 'noturno',
-    pratoPrincipal: 'Macarronada à bolonhesa com carne moída de primeira e queijo ralado',
-    acompanhamentos: ['Salada de repolho roxo e tomate fresco'],
-    sobremesaOuBebida: 'Suco natural de uva integral e fruta',
-    caloriasAprox: '~520 kcal',
-    observacaoNutricional: 'Refeição balanceada adaptada para estudantes do período noturno e EJA.'
-  };
-
   const itemDiurno = refeicoes?.find(r => r.turno === 'diurno');
   const itemNoturno = refeicoes?.find(r => r.turno === 'noturno');
 
-  const dadosDiurno = itemDiurno || mockDiurno;
-  const dadosNoturno = itemNoturno || mockNoturno;
-
-  const isRealDiurno = Boolean(itemDiurno?.descricao);
-  const isRealNoturno = Boolean(itemNoturno?.descricao);
+  const temRefeicoesHoje = Boolean(itemDiurno || itemNoturno);
 
   return (
     <div className="space-y-6">
@@ -76,33 +53,39 @@ export default function CardapioDoDia({ refeicoes, isLoading = false }: Cardapio
             </h2>
             <p className="text-xs text-slate-200 font-medium flex items-center gap-1.5">
               <Clock className="h-3.5 w-3.5 text-amber-300" />
-              <span>Cardápio planejado por nutricionistas da SED/SC</span>
+              <span>Cardápio oficial planejado por nutricionistas da SED/SC</span>
             </p>
           </div>
 
           {/* Quick Turno Filter */}
-          <div className="flex bg-black/20 backdrop-blur-md p-1 rounded-xl border border-white/10 text-xs font-bold self-start sm:self-auto">
-            <button
-              onClick={() => setSelectedTurno('todos')}
-              className={`px-3 py-1.5 rounded-lg transition-all ${selectedTurno === 'todos' ? 'bg-white text-[#00185f] shadow-sm' : 'text-white/80 hover:text-white'}`}
-            >
-              Todos
-            </button>
-            <button
-              onClick={() => setSelectedTurno('diurno')}
-              className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 ${selectedTurno === 'diurno' ? 'bg-white text-[#00185f] shadow-sm' : 'text-white/80 hover:text-white'}`}
-            >
-              <Sun className="h-3 w-3 text-amber-500" />
-              <span>Diurno</span>
-            </button>
-            <button
-              onClick={() => setSelectedTurno('noturno')}
-              className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 ${selectedTurno === 'noturno' ? 'bg-white text-[#00185f] shadow-sm' : 'text-white/80 hover:text-white'}`}
-            >
-              <Moon className="h-3 w-3 text-indigo-400" />
-              <span>Noturno</span>
-            </button>
-          </div>
+          {temRefeicoesHoje && (
+            <div className="flex bg-black/20 backdrop-blur-md p-1 rounded-xl border border-white/10 text-xs font-bold self-start sm:self-auto">
+              <button
+                onClick={() => setSelectedTurno('todos')}
+                className={`px-3 py-1.5 rounded-lg transition-all ${selectedTurno === 'todos' ? 'bg-white text-[#00185f] shadow-sm' : 'text-white/80 hover:text-white'}`}
+              >
+                Todos
+              </button>
+              {itemDiurno && (
+                <button
+                  onClick={() => setSelectedTurno('diurno')}
+                  className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 ${selectedTurno === 'diurno' ? 'bg-white text-[#00185f] shadow-sm' : 'text-white/80 hover:text-white'}`}
+                >
+                  <Sun className="h-3 w-3 text-amber-500" />
+                  <span>Diurno</span>
+                </button>
+              )}
+              {itemNoturno && (
+                <button
+                  onClick={() => setSelectedTurno('noturno')}
+                  className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 ${selectedTurno === 'noturno' ? 'bg-white text-[#00185f] shadow-sm' : 'text-white/80 hover:text-white'}`}
+                >
+                  <Moon className="h-3 w-3 text-indigo-400" />
+                  <span>Noturno</span>
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -112,11 +95,31 @@ export default function CardapioDoDia({ refeicoes, isLoading = false }: Cardapio
           <h3 className="text-base font-bold text-slate-700">Carregando cardápio do dia...</h3>
           <p className="text-xs text-slate-400">Consultando o banco de dados oficial de alimentação escolar.</p>
         </div>
+      ) : !temRefeicoesHoje ? (
+        <div className="bg-white border border-slate-200 rounded-3xl p-8 sm:p-12 text-center space-y-4 shadow-sm text-left">
+          <div className="p-4 bg-amber-50 text-amber-700 rounded-2xl w-fit mx-auto border border-amber-200/60">
+            <Utensils className="h-8 w-8" />
+          </div>
+          <div className="text-center max-w-md mx-auto space-y-1.5">
+            <h3 className="text-lg font-extrabold text-[#00185f] font-display">
+              Sem cardápio registrado para hoje
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-500 font-medium leading-relaxed">
+              Nos finais de semana, feriados ou recessos escolares, o serviço de alimentação escolar não opera. Em dias letivos normais, o cardápio é atualizado conforme o cronograma oficial da SED/SC.
+            </p>
+          </div>
+          <div className="pt-2 text-center">
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 bg-slate-100 px-3.5 py-1.5 rounded-full border border-slate-200">
+              <Info className="h-3.5 w-3.5 text-slate-400" />
+              <span>Consulte abaixo os editais e cronogramas mensais em PDF</span>
+            </span>
+          </div>
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
           {/* Card Turno Diurno */}
-          {(selectedTurno === 'todos' || selectedTurno === 'diurno') && (
-            <div className={`bg-white border-2 border-amber-200/80 rounded-3xl p-6 sm:p-7 shadow-sm flex flex-col justify-between transition-all hover:border-amber-400 hover:shadow-md ${selectedTurno === 'diurno' ? 'md:col-span-2' : ''}`}>
+          {itemDiurno && (selectedTurno === 'todos' || selectedTurno === 'diurno') && (
+            <div className={`bg-white border-2 border-amber-200/80 rounded-3xl p-6 sm:p-7 shadow-sm flex flex-col justify-between transition-all hover:border-amber-400 hover:shadow-md ${selectedTurno === 'diurno' || !itemNoturno ? 'md:col-span-2' : ''}`}>
               <div className="space-y-4">
                 {/* Badge & Turno */}
                 <div className="flex items-center justify-between">
@@ -129,62 +132,34 @@ export default function CardapioDoDia({ refeicoes, isLoading = false }: Cardapio
                       <h3 className="text-lg font-extrabold text-slate-900 font-display">Almoço & Lanche</h3>
                     </div>
                   </div>
-                  {isRealDiurno ? (
-                    <span className="text-[10px] font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-                      Sincronizado
-                    </span>
-                  ) : dadosDiurno.caloriasAprox ? (
-                    <span className="text-[11px] font-extrabold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200">
-                      {dadosDiurno.caloriasAprox}
-                    </span>
-                  ) : null}
+                  <span className="text-[10px] font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                    Sincronizado
+                  </span>
                 </div>
 
-                {/* Prato Principal ou Descrição Completa */}
-                <div className="bg-amber-50/60 border border-amber-100 rounded-2xl p-4 space-y-1">
+                {/* Descrição Completa da Refeição */}
+                <div className="bg-amber-50/60 border border-amber-100 rounded-2xl p-4 space-y-1.5">
                   <span className="text-[10px] font-extrabold text-amber-800 uppercase tracking-wide block">
-                    {isRealDiurno ? 'Refeição do Dia (SED/SC)' : 'Prato Principal'}
+                    Refeição do Dia (SED/SC)
                   </span>
                   <p className="text-sm font-bold text-slate-900 leading-relaxed">
-                    {dadosDiurno.descricao || dadosDiurno.pratoPrincipal}
+                    {itemDiurno.descricao}
                   </p>
                 </div>
-
-                {/* Acompanhamentos se houver formato estruturado */}
-                {!isRealDiurno && dadosDiurno.acompanhamentos && dadosDiurno.acompanhamentos.length > 0 && (
-                  <div className="space-y-2">
-                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Guarnições & Saladas</span>
-                    <ul className="space-y-1.5 text-xs text-slate-700 font-medium">
-                      {dadosDiurno.acompanhamentos.map((acomp, idx) => (
-                        <li key={idx} className="flex items-center gap-2">
-                          <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                          <span>{acomp}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {!isRealDiurno && dadosDiurno.sobremesaOuBebida && (
-                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
-                    <span className="font-bold text-slate-500">Sobremesa / Fruta:</span>
-                    <span className="font-extrabold text-slate-800">{dadosDiurno.sobremesaOuBebida}</span>
-                  </div>
-                )}
               </div>
 
               <div className="mt-5 pt-3 border-t border-slate-100 flex items-start gap-2 text-[11px] text-slate-500 font-medium">
                 <Info className="h-3.5 w-3.5 text-amber-600 shrink-0 mt-0.5" />
                 <span>
-                  {dadosDiurno.observacaoNutricional || 'Cardápio nutricional fiscalizado pelo Conselho de Alimentação Escolar (CAE).'}
+                  Cardápio nutricional fiscalizado pelo Conselho de Alimentação Escolar (CAE) e nutricionistas da SED/SC.
                 </span>
               </div>
             </div>
           )}
 
           {/* Card Turno Noturno */}
-          {(selectedTurno === 'todos' || selectedTurno === 'noturno') && (
-            <div className={`bg-white border-2 border-indigo-200/80 rounded-3xl p-6 sm:p-7 shadow-sm flex flex-col justify-between transition-all hover:border-indigo-400 hover:shadow-md ${selectedTurno === 'noturno' ? 'md:col-span-2' : ''}`}>
+          {itemNoturno && (selectedTurno === 'todos' || selectedTurno === 'noturno') && (
+            <div className={`bg-white border-2 border-indigo-200/80 rounded-3xl p-6 sm:p-7 shadow-sm flex flex-col justify-between transition-all hover:border-indigo-400 hover:shadow-md ${selectedTurno === 'noturno' || !itemDiurno ? 'md:col-span-2' : ''}`}>
               <div className="space-y-4">
                 {/* Badge & Turno */}
                 <div className="flex items-center justify-between">
@@ -197,53 +172,26 @@ export default function CardapioDoDia({ refeicoes, isLoading = false }: Cardapio
                       <h3 className="text-lg font-extrabold text-slate-900 font-display">Jantar dos Estudantes</h3>
                     </div>
                   </div>
-                  {isRealNoturno ? (
-                    <span className="text-[10px] font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-                      Sincronizado
-                    </span>
-                  ) : dadosNoturno.caloriasAprox ? (
-                    <span className="text-[11px] font-extrabold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200">
-                      {dadosNoturno.caloriasAprox}
-                    </span>
-                  ) : null}
+                  <span className="text-[10px] font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                    Sincronizado
+                  </span>
                 </div>
 
-                {/* Prato Principal ou Descrição Completa */}
-                <div className="bg-indigo-50/60 border border-indigo-100 rounded-2xl p-4 space-y-1">
+                {/* Descrição Completa da Refeição */}
+                <div className="bg-indigo-50/60 border border-indigo-100 rounded-2xl p-4 space-y-1.5">
                   <span className="text-[10px] font-extrabold text-indigo-800 uppercase tracking-wide block">
-                    {isRealNoturno ? 'Refeição do Dia (SED/SC)' : 'Prato Principal'}
+                    Refeição do Dia (SED/SC)
                   </span>
                   <p className="text-sm font-bold text-slate-900 leading-relaxed">
-                    {dadosNoturno.descricao || dadosNoturno.pratoPrincipal}
+                    {itemNoturno.descricao}
                   </p>
                 </div>
-
-                {!isRealNoturno && dadosNoturno.acompanhamentos && dadosNoturno.acompanhamentos.length > 0 && (
-                  <div className="space-y-2">
-                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Guarnições & Saladas</span>
-                    <ul className="space-y-1.5 text-xs text-slate-700 font-medium">
-                      {dadosNoturno.acompanhamentos.map((acomp, idx) => (
-                        <li key={idx} className="flex items-center gap-2">
-                          <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                          <span>{acomp}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {!isRealNoturno && dadosNoturno.sobremesaOuBebida && (
-                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
-                    <span className="font-bold text-slate-500">Sobremesa / Fruta:</span>
-                    <span className="font-extrabold text-slate-800">{dadosNoturno.sobremesaOuBebida}</span>
-                  </div>
-                )}
               </div>
 
               <div className="mt-5 pt-3 border-t border-slate-100 flex items-start gap-2 text-[11px] text-slate-500 font-medium">
                 <Info className="h-3.5 w-3.5 text-indigo-600 shrink-0 mt-0.5" />
                 <span>
-                  {dadosNoturno.observacaoNutricional || 'Cardápio nutricional adaptado para o turno noturno e EJA.'}
+                  Cardápio nutricional adaptado para o turno noturno e estudantes do Ensino Médio / EJA.
                 </span>
               </div>
             </div>

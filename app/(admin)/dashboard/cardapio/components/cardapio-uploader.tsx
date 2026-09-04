@@ -72,7 +72,7 @@ export default function CardapioUploader() {
       <div className="space-y-1">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-[10px] font-extrabold uppercase tracking-wider">
           <Sparkles className="h-3.5 w-3.5 text-amber-600" />
-          <span>Automação via Google Gemini 1.5 Flash</span>
+          <span>Automação via Google Gemini 2.5 Flash</span>
         </div>
         <h2 className="text-xl sm:text-2xl font-extrabold text-[#00185f] font-display">
           Importar Cardápio Oficial (PDF)
@@ -190,7 +190,7 @@ export default function CardapioUploader() {
             <div>
               <span className="font-bold block">A IA está interpretando o documento oficial...</span>
               <span className="text-[11px] text-indigo-700">
-                O modelo Gemini 1.5 Flash está convertendo o PDF, identificando dias úteis e organizando os pratos dos turnos diurno e noturno. Esse processo leva cerca de 5 a 10 segundos.
+                O modelo Gemini 2.5 Flash está convertendo o PDF, identificando dias úteis e organizando os pratos dos turnos diurno e noturno. Esse processo leva cerca de 5 a 10 segundos.
               </span>
             </div>
           </div>

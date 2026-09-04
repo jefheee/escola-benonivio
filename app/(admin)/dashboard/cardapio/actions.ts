@@ -182,11 +182,19 @@ export async function parseCardapioPDF(formData: FormData): Promise<ParseCardapi
       };
     }
 
-    const refeicoesParaGravar = validationResult.data.map((r) => ({
-      data: r.data,
-      turno: r.turno,
-      descricao: r.descricao.trim(),
-    }));
+    // 7.1 Deduplicação rigorosa pelo par (data, turno) mantendo a última ocorrência
+    // Evita o erro PostgreSQL "ON CONFLICT DO UPDATE command cannot affect row a second time"
+    const deduplicadoMap = validationResult.data.reduce((acc, curr) => {
+      const key = `${curr.data}_${curr.turno}`;
+      acc[key] = {
+        data: curr.data,
+        turno: curr.turno,
+        descricao: curr.descricao.trim(),
+      };
+      return acc;
+    }, {} as Record<string, { data: string; turno: 'diurno' | 'noturno'; descricao: string }>);
+
+    const refeicoesParaGravar = Object.values(deduplicadoMap);
 
     // 8. Bulk Upsert no Supabase via chave única composta (data, turno)
     const { data: upsertData, error: dbError } = await supabase
@@ -223,15 +231,23 @@ export async function parseCardapioPDF(formData: FormData): Promise<ParseCardapi
 }
 
 /**
- * Busca as refeições cadastradas recentemente para conferência administrativa.
+ * Busca as refeições cadastradas no banco de dados.
+ * Permite filtrar por mês específico (YYYY-MM) ou listar até 100 registros para visão do mês inteiro.
  */
-export async function getRefeicoesCadastradas(): Promise<RefeicaoRegistro[]> {
+export async function getRefeicoesCadastradas(mesAno?: string): Promise<RefeicaoRegistro[]> {
   const supabase = createClient();
-  const { data, error } = await supabase
+  let query = supabase
     .from('refeicoes')
     .select('id, data, turno, descricao, created_at')
-    .order('data', { ascending: false })
-    .limit(30);
+    .order('data', { ascending: false });
+
+  if (mesAno && /^\d{4}-\d{2}$/.test(mesAno)) {
+    query = query.gte('data', `${mesAno}-01`).lte('data', `${mesAno}-31`);
+  } else {
+    query = query.limit(100);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error('[SUPABASE ERROR] Erro ao buscar refeições:', error);
@@ -239,6 +255,84 @@ export async function getRefeicoesCadastradas(): Promise<RefeicaoRegistro[]> {
   }
 
   return (data || []) as RefeicaoRegistro[];
+}
+
+/**
+ * Atualiza os dados de uma refeição específica no cardápio (edição manual pela secretária).
+ */
+export async function updateRefeicaoAction(
+  id: string,
+  payload: { data: string; turno: 'diurno' | 'noturno'; descricao: string }
+): Promise<{ success: boolean; error?: string }> {
+  validateApiIsolation();
+  const supabase = createClient();
+
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) {
+    return { success: false, error: 'Não autorizado. Faça login novamente.' };
+  }
+
+  const parsed = RefeicaoItemSchema.safeParse(payload);
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0]?.message || 'Dados inválidos.' };
+  }
+
+  const { error } = await supabase
+    .from('refeicoes')
+    .update({
+      data: parsed.data.data,
+      turno: parsed.data.turno,
+      descricao: parsed.data.descricao.trim(),
+    })
+    .eq('id', id);
+
+  if (error) {
+    console.error('[SUPABASE ERROR] Erro ao atualizar refeição:', error);
+    return { success: false, error: error.message };
+  }
+
+  revalidatePath('/cardapio');
+  revalidatePath('/dashboard/cardapio');
+  return { success: true };
+}
+
+/**
+ * Cadastra manualmente uma nova refeição individual no cardápio.
+ */
+export async function createRefeicaoAction(
+  payload: { data: string; turno: 'diurno' | 'noturno'; descricao: string }
+): Promise<{ success: boolean; error?: string }> {
+  validateApiIsolation();
+  const supabase = createClient();
+
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) {
+    return { success: false, error: 'Não autorizado.' };
+  }
+
+  const parsed = RefeicaoItemSchema.safeParse(payload);
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0]?.message || 'Dados inválidos.' };
+  }
+
+  const { error } = await supabase
+    .from('refeicoes')
+    .upsert({
+      data: parsed.data.data,
+      turno: parsed.data.turno,
+      descricao: parsed.data.descricao.trim(),
+    }, {
+      onConflict: 'data, turno',
+    });
+
+  if (error) {
+    console.error('[SUPABASE ERROR] Erro ao cadastrar refeição:', error);
+    return { success: false, error: error.message };
+  }
+
+  revalidatePath('/cardapio');
+  revalidatePath('/dashboard/cardapio');
+  return { success: true };
 }
 
 /**
