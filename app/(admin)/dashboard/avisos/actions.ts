@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { z } from 'zod';
-import { sanitizeString, sanitizeInput } from '@/lib/sanitize';
+import { sanitizeString, sanitizeInput, UUID_REGEX } from '@/lib/sanitize';
 
 export interface EscolaAviso {
   id: string;
@@ -22,7 +22,7 @@ export interface EscolaAviso {
 }
 
 const avisoSchema = z.object({
-  id: z.string().uuid().optional().or(z.literal('')),
+  id: z.string().regex(UUID_REGEX, 'ID inválido.').optional().or(z.literal('')),
   titulo: z.string().min(1, 'Título é obrigatório.').max(200),
   resumo: z.string().min(1, 'Resumo é obrigatório.').max(500),
   conteudo: z.string().nullable().optional(),
@@ -35,7 +35,7 @@ const avisoSchema = z.object({
   status: z.enum(['ativo', 'lixeira']).default('ativo'),
 }).strict();
 
-const idSchema = z.string().uuid('ID inválido.');
+const idSchema = z.string().regex(UUID_REGEX, 'ID inválido.');
 
 function getStoragePathFromUrl(url: string, bucketName: string = 'escola_midias'): string | null {
   if (!url) return null;

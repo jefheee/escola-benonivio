@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useFormState, useFormStatus } from 'react-dom';
 import { Plus, Search, Edit2, Trash2, X, AlertCircle, CheckCircle2, Megaphone, Check } from 'lucide-react';
 import { EscolaNotificacao, saveNotificacao, deleteNotificacao, toggleNotificacaoAtiva } from '../actions';
@@ -15,7 +16,12 @@ const formInitialState = {
 };
 
 export default function NotificacoesManager({ initialNotifications }: ManagerProps) {
+  const router = useRouter();
   const [notifications, setNotifications] = useState<EscolaNotificacao[]>(initialNotifications);
+
+  useEffect(() => {
+    setNotifications(initialNotifications);
+  }, [initialNotifications]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingNotif, setEditingNotif] = useState<EscolaNotificacao | null>(null);
@@ -41,7 +47,7 @@ export default function NotificacoesManager({ initialNotifications }: ManagerPro
       setIsModalOpen(false);
       setEditingNotif(null);
       showFeedback('success', 'Notificação salva com sucesso!');
-      window.location.reload();
+      router.refresh();
       return { error: null, success: true };
     } else {
       return { error: res.error || 'Erro ao salvar notificação.', success: false };
@@ -64,11 +70,13 @@ export default function NotificacoesManager({ initialNotifications }: ManagerPro
 
   const handleToggleActive = (id: string, currentStatus: boolean) => {
     startTransition(async () => {
+      setNotifications(prev => prev.map(n => n.id === id ? { ...n, ativa: !currentStatus } : n));
       const res = await toggleNotificacaoAtiva(id, !currentStatus);
       if (res.success) {
-        setNotifications(notifications.map(n => n.id === id ? { ...n, ativa: !currentStatus } : n));
         showFeedback('success', 'Status da notificação alterado!');
+        router.refresh();
       } else {
+        setNotifications(prev => prev.map(n => n.id === id ? { ...n, ativa: currentStatus } : n));
         showFeedback('error', res.error || 'Erro ao alterar status.');
       }
     });
@@ -77,13 +85,14 @@ export default function NotificacoesManager({ initialNotifications }: ManagerPro
   const handleDelete = (id: string) => {
     if (confirm('Deseja excluir esta notificação?')) {
       startTransition(async () => {
+        setNotifications(prev => prev.filter(n => n.id !== id));
         const res = await deleteNotificacao(id);
         if (res.success) {
-          setNotifications(notifications.filter(n => n.id !== id));
           showFeedback('success', 'Notificação excluída com sucesso!');
-          window.location.reload();
+          router.refresh();
         } else {
           showFeedback('error', res.error || 'Erro ao excluir.');
+          router.refresh();
         }
       });
     }

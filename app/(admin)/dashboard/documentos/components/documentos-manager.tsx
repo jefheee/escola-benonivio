@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useTransition, ChangeEvent } from 'react';
+import { useState, useTransition, useEffect, ChangeEvent } from 'react';
+import { useRouter } from 'next/navigation';
 import { useFormState, useFormStatus } from 'react-dom';
 import { Plus, Search, Edit2, Trash2, X, AlertCircle, CheckCircle2, FileText, ExternalLink, UploadCloud } from 'lucide-react';
 import { EscolaDocumento, saveDocumento, deleteDocumento } from '../actions';
@@ -17,7 +18,12 @@ const formInitialState = {
 };
 
 export default function DocumentosManager({ initialDocs }: ManagerProps) {
+  const router = useRouter();
   const [docs, setDocs] = useState<EscolaDocumento[]>(initialDocs);
+
+  useEffect(() => {
+    setDocs(initialDocs);
+  }, [initialDocs]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingDoc, setEditingDoc] = useState<EscolaDocumento | null>(null);
@@ -44,7 +50,7 @@ export default function DocumentosManager({ initialDocs }: ManagerProps) {
       setEditingDoc(null);
       setFileUrl('');
       showFeedback('success', 'Documento salvo com sucesso!');
-      window.location.reload();
+      router.refresh();
       return { error: null, success: true };
     } else {
       return { error: res.error || 'Erro ao salvar documento.', success: false };
@@ -66,13 +72,14 @@ export default function DocumentosManager({ initialDocs }: ManagerProps) {
   const handleDelete = (id: string) => {
     if (confirm('Deseja excluir este documento permanentemente?')) {
       startTransition(async () => {
+        setDocs(prev => prev.filter(d => d.id !== id));
         const res = await deleteDocumento(id);
         if (res.success) {
-          setDocs(docs.filter(d => d.id !== id));
           showFeedback('success', 'Documento excluído com sucesso!');
-          window.location.reload();
+          router.refresh();
         } else {
           showFeedback('error', res.error || 'Erro ao excluir.');
+          router.refresh();
         }
       });
     }

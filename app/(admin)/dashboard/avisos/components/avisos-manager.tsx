@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useFormState, useFormStatus } from 'react-dom';
 import { Plus, Search, Edit2, Trash2, X, AlertCircle, CheckCircle2, Eye, Star, Megaphone, RotateCcw, Trash } from 'lucide-react';
 import { EscolaAviso, saveAviso, toggleAvisoDestaque, toggleAvisoPublicado, moveToTrashAviso, restoreAviso, deleteAvisoPermanently } from '../actions';
@@ -24,7 +25,12 @@ function formatISOForDateTimeLocal(isoString?: string) {
 }
 
 export default function AvisosManager({ initialNotices }: ManagerProps) {
+  const router = useRouter();
   const [notices, setNotices] = useState<EscolaAviso[]>(initialNotices);
+
+  useEffect(() => {
+    setNotices(initialNotices);
+  }, [initialNotices]);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState<'ativos' | 'lixeira'>('ativos');
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -61,7 +67,7 @@ export default function AvisosManager({ initialNotices }: ManagerProps) {
       setIsFormOpen(false);
       setEditingNotice(null);
       showFeedback('success', 'Aviso salvo com sucesso!');
-      window.location.reload();
+      router.refresh();
       return { error: null, success: true };
     } else {
       return { error: res.error || 'Ocorreu um erro.', success: false };
@@ -98,13 +104,14 @@ export default function AvisosManager({ initialNotices }: ManagerProps) {
   const handleSoftDelete = (id: string) => {
     if (confirm('Tem certeza que deseja mover este aviso para a lixeira?')) {
       startTransition(async () => {
+        setNotices(prev => prev.map(n => n.id === id ? { ...n, status: 'lixeira', publicado: false } : n));
         const res = await moveToTrashAviso(id);
         if (res.success) {
-          setNotices(notices.map(n => n.id === id ? { ...n, status: 'lixeira', publicado: false } : n));
           showFeedback('success', 'Aviso movido para a lixeira com sucesso!');
-          window.location.reload();
+          router.refresh();
         } else {
           showFeedback('error', res.error || 'Erro ao mover para a lixeira.');
+          router.refresh();
         }
       });
     }
@@ -113,13 +120,14 @@ export default function AvisosManager({ initialNotices }: ManagerProps) {
   // Restore from trash
   const handleRestore = (id: string) => {
     startTransition(async () => {
+      setNotices(prev => prev.map(n => n.id === id ? { ...n, status: 'ativo', publicado: true } : n));
       const res = await restoreAviso(id);
       if (res.success) {
-        setNotices(notices.map(n => n.id === id ? { ...n, status: 'ativo', publicado: true } : n));
         showFeedback('success', 'Aviso restaurado com sucesso!');
-        window.location.reload();
+        router.refresh();
       } else {
         showFeedback('error', res.error || 'Erro ao restaurar aviso.');
+        router.refresh();
       }
     });
   };
@@ -128,13 +136,14 @@ export default function AvisosManager({ initialNotices }: ManagerProps) {
   const handleHardDelete = (id: string) => {
     if (confirm('Deseja EXCLUIR DEFINITIVAMENTE este aviso e deletar todas as mídias associadas do storage? Esta ação é irreversível.')) {
       startTransition(async () => {
+        setNotices(prev => prev.filter(n => n.id !== id));
         const res = await deleteAvisoPermanently(id);
         if (res.success) {
-          setNotices(notices.filter(n => n.id !== id));
           showFeedback('success', 'Aviso e mídias excluídos permanentemente!');
-          window.location.reload();
+          router.refresh();
         } else {
           showFeedback('error', res.error || 'Erro ao excluir definitivamente.');
+          router.refresh();
         }
       });
     }
@@ -142,12 +151,15 @@ export default function AvisosManager({ initialNotices }: ManagerProps) {
 
   const handleToggleDestaque = (id: string, current: boolean) => {
     startTransition(async () => {
+      // Optimistic update
+      setNotices(prev => prev.map(n => n.id === id ? { ...n, destaque_home: !current } : n));
       const res = await toggleAvisoDestaque(id, !current);
       if (res.success) {
-        setNotices(notices.map(n => n.id === id ? { ...n, destaque_home: !current } : n));
         showFeedback('success', `Destaque ${!current ? 'ativado' : 'desativado'} com sucesso!`);
-        window.location.reload();
+        router.refresh();
       } else {
+        // Rollback optimistic update
+        setNotices(prev => prev.map(n => n.id === id ? { ...n, destaque_home: current } : n));
         showFeedback('error', res.error || 'Erro ao alterar destaque.');
       }
     });
@@ -155,12 +167,15 @@ export default function AvisosManager({ initialNotices }: ManagerProps) {
 
   const handleTogglePublicado = (id: string, current: boolean) => {
     startTransition(async () => {
+      // Optimistic update
+      setNotices(prev => prev.map(n => n.id === id ? { ...n, publicado: !current } : n));
       const res = await toggleAvisoPublicado(id, !current);
       if (res.success) {
-        setNotices(notices.map(n => n.id === id ? { ...n, publicado: !current } : n));
         showFeedback('success', `Aviso ${!current ? 'publicado' : 'despublicado'} com sucesso!`);
-        window.location.reload();
+        router.refresh();
       } else {
+        // Rollback optimistic update
+        setNotices(prev => prev.map(n => n.id === id ? { ...n, publicado: current } : n));
         showFeedback('error', res.error || 'Erro ao alterar publicação.');
       }
     });

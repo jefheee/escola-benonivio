@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { z } from 'zod';
-import { sanitizeString } from '@/lib/sanitize';
+import { sanitizeString, UUID_REGEX } from '@/lib/sanitize';
 
 export interface EscolaDocumento {
   id: string;
@@ -14,13 +14,13 @@ export interface EscolaDocumento {
 }
 
 const documentoSchema = z.object({
-  id: z.string().uuid().optional().or(z.literal('')),
+  id: z.string().regex(UUID_REGEX, 'ID inválido.').optional().or(z.literal('')),
   titulo: z.string().min(1, 'Título é obrigatório.').max(200),
   url_arquivo: z.string().url('URL do arquivo inválida.'),
   categoria: z.string().nullable().optional(),
 }).strict();
 
-const idSchema = z.string().uuid('ID inválido.');
+const idSchema = z.string().regex(UUID_REGEX, 'ID inválido.');
 
 export async function getDocumentosAdmin() {
   try {

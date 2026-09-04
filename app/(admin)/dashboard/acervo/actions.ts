@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { z } from 'zod';
-import { sanitizeString, sanitizeInput } from '@/lib/sanitize';
+import { sanitizeString, sanitizeInput, UUID_REGEX } from '@/lib/sanitize';
 
 export interface EscolaAcervoItem {
   id: string;
@@ -19,7 +19,7 @@ export interface EscolaAcervoItem {
 
 // Zod Strict Schema for Acervo Payload
 const acervoSchema = z.object({
-  id: z.string().uuid().optional().or(z.literal('')),
+  id: z.string().regex(UUID_REGEX, 'ID inválido.').optional().or(z.literal('')),
   ano: z.string().min(1, 'Ano é obrigatório.').max(50),
   categoria: z.string().min(1, 'Categoria é obrigatória.').max(100),
   titulo: z.string().min(1, 'Título é obrigatório.').max(200),
@@ -29,7 +29,7 @@ const acervoSchema = z.object({
   data_publicacao: z.string().optional(),
 }).strict();
 
-const idSchema = z.string().uuid('ID inválido.');
+const idSchema = z.string().regex(UUID_REGEX, 'ID inválido.');
 const anoSchema = z.string().min(1, 'Ano é obrigatório.');
 
 function getStoragePathFromUrl(url: string, bucketName: string = 'escola_midias'): string | null {

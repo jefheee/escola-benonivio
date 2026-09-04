@@ -41,3 +41,9 @@ export function sanitizeInput<T>(val: T): T {
 
   return val;
 }
+
+/**
+ * Standard PostgreSQL UUID regex pattern (32 hexadecimal chars with hyphens).
+ * More forgiving than strict RFC-4122 while remaining completely safe against injections.
+ */
+export const UUID_REGEX = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;

@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { z } from 'zod';
-import { sanitizeString } from '@/lib/sanitize';
+import { sanitizeString, UUID_REGEX } from '@/lib/sanitize';
 
 export interface EscolaNotificacao {
   id: string;
@@ -15,14 +15,14 @@ export interface EscolaNotificacao {
 }
 
 const notificacaoSchema = z.object({
-  id: z.string().uuid().optional().or(z.literal('')),
+  id: z.string().regex(UUID_REGEX, 'ID inválido.').optional().or(z.literal('')),
   titulo: z.string().min(1, 'Título é obrigatório.').max(200),
   mensagem: z.string().min(1, 'Mensagem é obrigatória.').max(1000),
   importancia: z.enum(['Alta', 'Média', 'Baixa']),
   ativa: z.boolean().default(true),
 }).strict();
 
-const idSchema = z.string().uuid('ID inválido.');
+const idSchema = z.string().regex(UUID_REGEX, 'ID inválido.');
 
 export async function getNotificacoesAdmin() {
   try {

@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { z } from 'zod';
-import { sanitizeString, sanitizeInput } from '@/lib/sanitize';
+import { sanitizeString, sanitizeInput, UUID_REGEX } from '@/lib/sanitize';
 
 export interface EscolaTurma {
   id: string;
@@ -31,7 +31,7 @@ export interface EscolaTurmaPost {
 }
 
 const turmaSchema = z.object({
-  id: z.string().uuid().optional().or(z.literal('')),
+  id: z.string().regex(UUID_REGEX, 'ID inválido.').optional().or(z.literal('')),
   ano: z.string().min(1, 'Ano é obrigatório.').max(100),
   nome: z.string().min(1, 'Nome da turma é obrigatório.').max(100),
   turno: z.string().min(1, 'Turno é obrigatório.').max(50),
@@ -53,8 +53,8 @@ const turmaSchema = z.object({
 }).strict();
 
 const postSchema = z.object({
-  id: z.string().uuid().optional().or(z.literal('')),
-  turma_id: z.string().uuid('ID de turma inválido.'),
+  id: z.string().regex(UUID_REGEX, 'ID inválido.').optional().or(z.literal('')),
+  turma_id: z.string().regex(UUID_REGEX, 'ID de turma inválido.'),
   titulo: z.string().min(1, 'Título é obrigatório.').max(200),
   conteudo: z.string().nullable().optional(),
   link_referencia: z.string().url('Link de referência inválido.').nullable().optional(),
@@ -65,7 +65,7 @@ const postSchema = z.object({
   status: z.enum(['ativo', 'lixeira']).default('ativo'),
 }).strict();
 
-const idSchema = z.string().uuid('ID inválido.');
+const idSchema = z.string().regex(UUID_REGEX, 'ID inválido.');
 
 function getStoragePathFromUrl(url: string, bucketName: string = 'escola_midias'): string | null {
   if (!url) return null;

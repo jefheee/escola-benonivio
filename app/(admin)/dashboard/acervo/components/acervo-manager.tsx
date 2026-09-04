@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useFormState, useFormStatus } from 'react-dom';
 import { Plus, Search, Edit2, Trash2, X, AlertCircle, CheckCircle2, Eye, Folder, RotateCcw, Trash, Archive } from 'lucide-react';
 import { EscolaAcervoItem, saveAcervo, moveToTrashAcervo, restoreAcervo, deleteAcervoPermanently, archiveYear } from '../actions';
@@ -24,7 +25,12 @@ function formatISOForDateTimeLocal(isoString?: string) {
 }
 
 export default function AcervoManager({ initialItems }: ManagerProps) {
+  const router = useRouter();
   const [items, setItems] = useState<EscolaAcervoItem[]>(initialItems);
+
+  useEffect(() => {
+    setItems(initialItems);
+  }, [initialItems]);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState<'ativos' | 'lixeira'>('ativos');
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -62,7 +68,7 @@ export default function AcervoManager({ initialItems }: ManagerProps) {
       setIsFormOpen(false);
       setEditingItem(null);
       showFeedback('success', 'Registro do acervo salvo com sucesso!');
-      window.location.reload();
+      router.refresh();
       return { error: null, success: true };
     } else {
       return { error: res.error || 'Ocorreu um erro.', success: false };
@@ -97,13 +103,14 @@ export default function AcervoManager({ initialItems }: ManagerProps) {
   const handleSoftDelete = (id: string) => {
     if (confirm('Tem certeza que deseja mover este item para a lixeira?')) {
       startTransition(async () => {
+        setItems(prev => prev.map(i => i.id === id ? { ...i, status: 'lixeira' } : i));
         const res = await moveToTrashAcervo(id);
         if (res.success) {
-          setItems(items.map(i => i.id === id ? { ...i, status: 'lixeira' } : i));
           showFeedback('success', 'Item movido para a lixeira!');
-          window.location.reload();
+          router.refresh();
         } else {
           showFeedback('error', res.error || 'Erro ao mover para a lixeira.');
+          router.refresh();
         }
       });
     }
@@ -112,13 +119,14 @@ export default function AcervoManager({ initialItems }: ManagerProps) {
   // Restore from trash
   const handleRestore = (id: string) => {
     startTransition(async () => {
+      setItems(prev => prev.map(i => i.id === id ? { ...i, status: 'ativo' } : i));
       const res = await restoreAcervo(id);
       if (res.success) {
-        setItems(items.map(i => i.id === id ? { ...i, status: 'ativo' } : i));
         showFeedback('success', 'Item restaurado com sucesso!');
-        window.location.reload();
+        router.refresh();
       } else {
         showFeedback('error', res.error || 'Erro ao restaurar item.');
+        router.refresh();
       }
     });
   };
@@ -127,13 +135,14 @@ export default function AcervoManager({ initialItems }: ManagerProps) {
   const handleHardDelete = (id: string) => {
     if (confirm('Deseja EXCLUIR DEFINITIVAMENTE este registro de acervo e apagar todas as mídias correspondentes no storage?')) {
       startTransition(async () => {
+        setItems(prev => prev.filter(i => i.id !== id));
         const res = await deleteAcervoPermanently(id);
         if (res.success) {
-          setItems(items.filter(i => i.id !== id));
           showFeedback('success', 'Item e mídias excluídos permanentemente!');
-          window.location.reload();
+          router.refresh();
         } else {
           showFeedback('error', res.error || 'Erro ao excluir definitivamente.');
+          router.refresh();
         }
       });
     }
@@ -144,14 +153,15 @@ export default function AcervoManager({ initialItems }: ManagerProps) {
     if (!archiveYearInput) return;
     if (confirm(`Tem certeza que deseja arquivar todos os itens do ano ${archiveYearInput}?`)) {
       startTransition(async () => {
+        setItems(prev => prev.map(i => i.ano === archiveYearInput && i.status !== 'lixeira' ? { ...i, status: 'arquivado' } : i));
         const res = await archiveYear(archiveYearInput);
         if (res.success) {
-          setItems(items.map(i => i.ano === archiveYearInput && i.status !== 'lixeira' ? { ...i, status: 'arquivado' } : i));
           showFeedback('success', `Todos os registros do ano ${archiveYearInput} foram arquivados!`);
           setArchiveYearInput('');
-          window.location.reload();
+          router.refresh();
         } else {
           showFeedback('error', res.error || 'Erro ao arquivar ano.');
+          router.refresh();
         }
       });
     }

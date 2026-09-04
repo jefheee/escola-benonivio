@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useFormState, useFormStatus } from 'react-dom';
 import { Plus, Search, Edit2, Trash2, X, AlertCircle, CheckCircle2, MessageSquare, Megaphone, Link as LinkIcon, RotateCcw, Trash } from 'lucide-react';
 import { EscolaTurma, EscolaTurmaPost, saveTurma, deleteTurma, getPostsAdmin, savePost, moveToTrashPost, restorePost, deletePostPermanently } from '../actions';
@@ -24,7 +25,12 @@ function formatISOForDateTimeLocal(isoString?: string) {
 }
 
 export default function TurmasManager({ initialTurmas }: ManagerProps) {
+  const router = useRouter();
   const [turmas, setTurmas] = useState<EscolaTurma[]>(initialTurmas);
+
+  useEffect(() => {
+    setTurmas(initialTurmas);
+  }, [initialTurmas]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isTurmaModalOpen, setIsTurmaModalOpen] = useState(false);
   const [editingTurma, setEditingTurma] = useState<EscolaTurma | null>(null);
@@ -62,7 +68,7 @@ export default function TurmasManager({ initialTurmas }: ManagerProps) {
       setIsTurmaModalOpen(false);
       setEditingTurma(null);
       showFeedback('success', 'Turma salva com sucesso!');
-      window.location.reload();
+      router.refresh();
       return { error: null, success: true };
     } else {
       return { error: res.error || 'Erro ao salvar turma.', success: false };
@@ -120,11 +126,12 @@ export default function TurmasManager({ initialTurmas }: ManagerProps) {
       startTransition(async () => {
         const res = await deleteTurma(id);
         if (res.success) {
-          setTurmas(turmas.filter(t => t.id !== id));
+          setTurmas(prev => prev.filter(t => t.id !== id));
           showFeedback('success', 'Turma excluída com sucesso!');
-          window.location.reload();
+          router.refresh();
         } else {
           showFeedback('error', res.error || 'Erro ao excluir.');
+          router.refresh();
         }
       });
     }
