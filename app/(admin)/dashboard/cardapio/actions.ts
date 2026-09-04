@@ -96,31 +96,53 @@ export async function parseCardapioPDF(formData: FormData): Promise<ParseCardapi
     const arrayBuffer = await file.arrayBuffer();
     const base64Data = Buffer.from(arrayBuffer).toString('base64');
 
-    // 5. Inicialização do Google Generative AI
+    // 5. Inicialização do Google Generative AI com modelos estáveis e fallback
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-1.5-flash',
-      generationConfig: {
-        responseMimeType: 'application/json',
-        temperature: 0.1,
-      },
-    });
+    const candidateModels = [
+      process.env.GEMINI_MODEL,
+      'gemini-2.5-flash',
+      'gemini-3.5-flash',
+      'gemini-2.5-flash-lite',
+      'gemini-1.5-flash',
+    ].filter(Boolean) as string[];
 
     const prompt = `Você é um extrator de dados. Analise este PDF de cardápio escolar. Extraia os pratos principais, guarnições e sobremesas de cada dia útil do mês. Retorne ESTRITAMENTE um array JSON com a tipagem: [{ data: 'YYYY-MM-DD', turno: 'diurno' | 'noturno', descricao: 'Prato Principal: X. Guarnições: Y. Sobremesa: Z' }]. Não inclua markdown na resposta, apenas o JSON puro.`;
 
-    const result = await model.generateContent([
-      {
-        inlineData: {
-          data: base64Data,
-          mimeType: 'application/pdf',
-        },
-      },
-      prompt,
-    ]);
+    let responseText = '';
+    let lastError: Error | null = null;
 
-    const responseText = result.response.text();
+    for (const modelName of candidateModels) {
+      try {
+        const model = genAI.getGenerativeModel({
+          model: modelName,
+          generationConfig: {
+            responseMimeType: 'application/json',
+            temperature: 0.1,
+          },
+        });
+
+        const result = await model.generateContent([
+          {
+            inlineData: {
+              data: base64Data,
+              mimeType: 'application/pdf',
+            },
+          },
+          prompt,
+        ]);
+
+        responseText = result.response.text();
+        if (responseText) {
+          break;
+        }
+      } catch (err: unknown) {
+        lastError = err instanceof Error ? err : new Error(String(err));
+        console.warn(`[AI CARDAPIO] Falha ao consultar modelo ${modelName}:`, lastError.message);
+      }
+    }
+
     if (!responseText) {
-      throw new Error('O modelo de IA não retornou nenhuma resposta.');
+      throw lastError || new Error('O modelo de IA não retornou nenhuma resposta.');
     }
 
     // 6. Limpeza e parsing defensivo do JSON

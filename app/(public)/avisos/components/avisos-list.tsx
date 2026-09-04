@@ -22,10 +22,10 @@ export default function AvisosList({ initialAvisos }: AvisosListProps) {
     if (selectedAviso) {
       document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = 'unset';
     }
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = 'unset';
     };
   }, [selectedAviso]);
 
@@ -51,7 +51,7 @@ export default function AvisosList({ initialAvisos }: AvisosListProps) {
                     <img
                       src={firstImage}
                       alt={aviso.titulo}
-                      className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   ) : (
                     <div className="flex flex-col items-center justify-center text-slate-400 gap-2 p-6 text-center w-full">

@@ -66,7 +66,7 @@ export default function RefeicoesTabela({ initialRefeicoes }: RefeicoesTabelaPro
 
       {refeicoes.length > 0 ? (
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse min-w-[650px]">
             <thead>
               <tr className="border-b border-slate-200 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
                 <th className="py-3 px-3">Data</th>
