@@ -31,7 +31,8 @@ export const getAcervoPublic = unstable_cache(
     const { data, error } = await supabasePublic
       .from('escola_documentos')
       .select('id, titulo, url_arquivo, categoria, created_at')
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(100);
 
     if (error) {
       console.error('Erro ao buscar acervo digital (documentos) público:', error);
@@ -57,7 +58,8 @@ export const getAcervoHistoricoPublic = unstable_cache(
       .eq('status', 'ativo')
       .lte('data_publicacao', nowStr)
       .order('ano', { ascending: false })
-      .order('data_publicacao', { ascending: false });
+      .order('data_publicacao', { ascending: false })
+      .limit(100);
 
     if (error) {
       console.error('Erro ao buscar acervo histórico público:', error);

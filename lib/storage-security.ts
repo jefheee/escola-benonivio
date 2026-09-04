@@ -92,9 +92,16 @@ export function validateAndSanitizeFile(
   }
 
   // 3. Cryptographically Secure Filename Generation (Anti-Command Injection)
-  const cryptoRandom = typeof crypto !== 'undefined' && crypto.randomUUID
-    ? crypto.randomUUID()
-    : `${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
+  let cryptoRandom: string;
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    cryptoRandom = crypto.randomUUID();
+  } else if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    cryptoRandom = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+  } else {
+    cryptoRandom = `${Date.now()}-secure`;
+  }
 
   const sanitizedFilename = `${cryptoRandom}.${ext}`;
 

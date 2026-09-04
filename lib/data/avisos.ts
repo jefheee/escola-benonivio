@@ -26,7 +26,8 @@ export const getAvisosPublic = unstable_cache(
       .eq('status', 'ativo')
       .lte('data_publicacao', nowStr)
       .or(`data_expiracao.is.null,data_expiracao.gt.${nowStr}`)
-      .order('data_publicacao', { ascending: false });
+      .order('data_publicacao', { ascending: false })
+      .limit(50);
 
     if (error) {
       console.error('Erro ao buscar avisos públicos:', error);
@@ -52,7 +53,8 @@ export const getAvisosDestaqueHome = unstable_cache(
       .eq('destaque_home', true)
       .lte('data_publicacao', nowStr)
       .or(`data_expiracao.is.null,data_expiracao.gt.${nowStr}`)
-      .order('data_publicacao', { ascending: false });
+      .order('data_publicacao', { ascending: false })
+      .limit(10);
 
     if (error) {
       console.error('Erro ao buscar avisos de destaque:', error);

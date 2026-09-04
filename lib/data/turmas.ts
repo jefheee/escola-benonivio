@@ -46,7 +46,8 @@ export const getTurmasPublic = unstable_cache(
       .from('escola_turmas')
       .select('id, ano, nome, turno, whatsapp_link, outros_links')
       .order('ano', { ascending: true })
-      .order('nome', { ascending: true });
+      .order('nome', { ascending: true })
+      .limit(100);
 
     if (error) {
       console.error('Erro ao buscar turmas públicas:', error);
@@ -92,7 +93,8 @@ export const getTurmaPostsPublic = unstable_cache(
       .eq('status', 'ativo')
       .lte('data_publicacao', nowStr)
       .or(`data_expiracao.is.null,data_expiracao.gt.${nowStr}`)
-      .order('data_publicacao', { ascending: false });
+      .order('data_publicacao', { ascending: false })
+      .limit(50);
 
     if (error) {
       console.error(`Erro ao buscar posts da turma ${turmaId}:`, error);

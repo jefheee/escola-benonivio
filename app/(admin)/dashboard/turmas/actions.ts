@@ -84,9 +84,10 @@ export async function getTurmasAdmin() {
     const supabase = createClient();
     const { data, error } = await supabase
       .from('escola_turmas')
-      .select('*')
+      .select('id, ano, nome, turno, whatsapp_link, outros_links, created_at')
       .order('ano', { ascending: true })
-      .order('nome', { ascending: true });
+      .order('nome', { ascending: true })
+      .limit(100);
 
     if (error) {
       console.error('[DATABASE ERROR] getTurmasAdmin:', error);
@@ -205,9 +206,10 @@ export async function getPostsAdmin(turmaIdRaw: string) {
     const supabase = createClient();
     const { data, error } = await supabase
       .from('escola_turmas_posts')
-      .select('*')
+      .select('id, turma_id, titulo, conteudo, link_referencia, imagem_url, imagens, data_publicacao, data_expiracao, status, created_at')
       .eq('turma_id', validTurmaId.data)
-      .order('data_publicacao', { ascending: false });
+      .order('data_publicacao', { ascending: false })
+      .limit(100);
 
     if (error) {
       console.error('[DATABASE ERROR] getPostsAdmin:', error);

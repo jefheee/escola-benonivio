@@ -21,8 +21,9 @@ export async function getPaginasAdmin() {
     const supabase = createClient();
     const { data, error } = await supabase
       .from('escola_conteudo_paginas')
-      .select('*')
-      .order('slug', { ascending: true });
+      .select('slug, conteudo_html, updated_at')
+      .order('slug', { ascending: true })
+      .limit(50);
 
     if (error) {
       console.error('[DATABASE ERROR] getPaginasAdmin:', error);

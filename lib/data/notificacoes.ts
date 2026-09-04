@@ -21,7 +21,8 @@ export const getNotificacoesPublic = unstable_cache(
       .from('escola_notificacoes')
       .select('id, titulo, mensagem, importancia, ativa, created_at')
       .eq('ativa', true)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(20);
 
     if (error) {
       console.error('Erro ao buscar notificações públicas:', error);

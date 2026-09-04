@@ -47,9 +47,10 @@ export async function getAcervoAdmin() {
     const supabase = createClient();
     const { data, error } = await supabase
       .from('escola_acervo')
-      .select('*')
+      .select('id, ano, categoria, titulo, descricao, imagens, data_publicacao, status, created_at')
       .order('ano', { ascending: false })
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(200);
 
     if (error) {
       console.error('[DATABASE ERROR] getAcervoAdmin:', error);

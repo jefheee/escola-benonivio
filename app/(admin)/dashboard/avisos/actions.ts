@@ -52,8 +52,9 @@ export async function getAvisosAdmin() {
     const supabase = createClient();
     const { data, error } = await supabase
       .from('escola_avisos')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .select('id, titulo, resumo, conteudo, destaque_home, publicado, imagem_url, imagens, data_publicacao, data_expiracao, status, created_at, updated_at')
+      .order('created_at', { ascending: false })
+      .limit(200);
 
     if (error) {
       console.error('[DATABASE ERROR] getAvisosAdmin:', error);

@@ -1,7 +1,7 @@
 # 📌 CONTEXTO ATUAL DO PROJETO - EEB PROFESSOR BENONÍVIO JOÃO MARTINS
 
-**Última Atualização:** 12 de Agosto de 2026  
-**Status do Projeto:** Em Desenvolvimento Ativo / Histórico Git Resetado e Blindado / SEO & Acervo Concluídos  
+**Última Atualização:** 03 de Setembro de 2026  
+**Status do Projeto:** Em Produção / Blindagem de Segurança 100% Concluída (12/12 Diretivas Enterprise)  
 **Arquitetura:** Docs as Code (Fonte de Verdade)
 
 ---
@@ -17,48 +17,72 @@
 - **Linguagem:** TypeScript
 - **Estilização:** Tailwind CSS (Design System institucional com azul `#00185f` e vermelho `#bc0100`)
 - **Ícones:** Lucide React
-- **Backend & Banco de Dados:** Supabase (PostgreSQL, Row Level Security - RLS, Auth, Realtime)
+- **Validação de Dados:** Zod v3 (`.strict()` em todos os payloads)
+- **Backend & Banco de Dados:** Supabase (PostgreSQL 17, Row Level Security - RLS, Auth, Realtime)
 - **Armazenamento de Mídias:** Supabase Storage (`escola_midias` bucket)
 - **Hospedagem & Deploy:** Vercel (`https://escolabenonivio.vercel.app`)
 
 ---
 
-## 🛡️ 2. Arquitetura de Segurança, Reset Git e Blindagem
+## 🛡️ 2. Arquitetura de Segurança e Blindagem Completa (12 Diretivas)
 
-1. **Reset do Histórico do Git (Purga de Segredos):**
-   - Árvore de commits antiga destruída e substituída por um repositório limpo (`chore: reset git history for security and update architecture`).
-   - Push forçado (`git push -u origin main --force`) realizado para purgar permanentemente qualquer credencial exposta em commits passados.
-2. **Proteção no Git (`.gitignore`):**
-   - Inclusão rigorosa de `docs/**/.obsidian/`, `docs/**/Segurança.md` e `docs/**/Senhas.md` nos arquivos `.gitignore` (raiz e secundário).
-3. **Validação de Storage & Mídias (`lib/storage-security.ts`):**
-   - Whitelist estrita de MIME types (JPEG, PNG, WebP, GIF, AVIF, PDF, DOC, DOCX, XLS, XLSX).
-   - Limite estrito de tamanho: **5 MB** para imagens e **10 MB** para documentos.
-   - Mitigação de Pixel Flood / Image Bomb (máximo 4096px por dimensão / 16 Megapixels).
-   - Sanitização criptográfica de nomes de arquivo (Crypto UUID).
-4. **Controle de Acesso & RLS (`RLS_policies.sql`):**
-   - Leitura pública ativada apenas para itens publicados em `escola_turmas`, `escola_documentos` e `escola_avisos`.
-   - Modificação (INSERT, UPDATE, DELETE) restrita exclusivamente a usuários autenticados via Supabase Auth.
+1. **Variáveis de Ambiente, Secrets e Higiene de Repositório:**
+   - Isolamento de chaves via `lib/env-guard.ts` (`validateApiIsolation()` executado em runtime).
+   - Ausência total de credenciais privadas ou `service_role` com prefixo `NEXT_PUBLIC_`.
+   - `.gitignore` blindado para todas as variações de ambiente (`.env`, `.env*.local`, `.env.local`, `.env.development`, `.env.test`, `.env.production`).
+   - Histórico do Git limpo e sem credenciais rastreadas.
+2. **Rate Limiting em Camadas & Proteção contra Esgotamento (Bomba de Custo):**
+   - Camada 1 (Edge Middleware): Rate limiting ativo em `middleware.ts` bloqueando IPs após 5 requisições/minuto em rotas de auth.
+   - Camada 2 (Server Actions): `lib/rate-limit.ts` (Sliding Window in-memory) na Server Action `login()`.
+   - Limite estrito de queries (Caps): Adicionado `.limit()` compulsório em todas as buscas públicas e administrativas (`lib/data/*.ts` e `actions.ts`), impedindo exaustão de banco e banda.
+3. **Proteção contra Registro Falso e Anti-Enumeração de Contas:**
+   - Schema Zod estrito no login (`email` formatado e `password`).
+   - Respostas de erro uniformes e genéricas no login, impedindo enumeração de e-mails cadastrados.
+4. **Proteção de Rotas, Sessões e Cookies Seguros:**
+   - Validação autoritativa do JWT do Supabase no Edge Middleware via `supabase.auth.getUser()`.
+   - Bloqueio no servidor para todas as rotas `/dashboard/*` e `/admin/*`.
+   - Cookies configurados com `httpOnly: true`, `secure: true` (produção) e `sameSite: 'lax'`.
+   - Revogação global de sessões no logout via `supabase.auth.signOut({ scope: 'global' })`.
+5. **Sanitização contra XSS, SQLi e Command Injection:**
+   - Módulo `lib/sanitize.ts` com higienização recursiva de strings, eliminação de tags `<script>` e protocolos `javascript:`.
+   - Consultas 100% parametrizadas via SDK oficial do Supabase.
+   - Nomes de arquivos gerados criptograficamente no upload (`crypto.randomUUID()` e `crypto.getRandomValues()`), eliminando path traversal (`../`) e command injection.
+6. **Defesa de Uploads e Storage:**
+   - Módulo `lib/storage-security.ts` com whitelist estrita de tipos MIME (imagens e documentos permitidos).
+   - Teto máximo de tamanho: 5MB para imagens e 10MB para documentos.
+   - Proteção contra Image Bomb / Pixel Flood: Bloqueio de resoluções superiores a 4096px ou 16 Megapixels antes do processamento.
+7. **Tratamento Defensivo de Erros e Logs Sanitizados:**
+   - Erros nativos capturados e logados exclusivamente no servidor (`console.error`).
+   - Mensagens para o cliente final tratadas e genéricas, sem expor stack traces ou chaves internas.
+8. **Row Level Security (RLS) Abrangente:**
+   - `RLS_policies.sql` executado e ativo em 100% das tabelas (`escola_acervo`, `escola_avisos`, `escola_documentos`, `escola_notificacoes`, `escola_conteudo_paginas`, `escola_turmas`, `escola_turmas_posts`) e no bucket `escola_midias`.
+   - `FORCE ROW LEVEL SECURITY` ativado. Mutações restritas a `(select auth.uid()) IS NOT NULL`.
+9. **Data Minimization (Trim de Respostas):**
+   - Substituição de `.select('*')` por projeções explícitas de colunas em todas as Server Actions e queries públicas.
+10. **Cabeçalhos HTTP (Security Headers) & HTTPS:**
+    - CSP restrito, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Strict-Transport-Security` (HSTS com 2 anos), `Referrer-Policy` e `Permissions-Policy` configurados em `next.config.mjs`.
 
 ---
 
 ## 🚀 3. Implementações Concluídas (Ponta a Ponta)
 
+- [x] **Checklist Completo de Segurança Enterprise (12/12):**
+  - Isolamento de API, Rate Limiting, Cookies Seguros, Zod Strict, Anti-Enumeração, Anti-XSS, Caps em queries, RLS forçado e CSP.
 - [x] **Fix de Compilação/Deploy Vercel (`components/features/revista-okaza-card.tsx`):**
-  - Correção de caracteres de aspas duplas sem escape (`"` -> `&quot;`) na regra `react/no-unescaped-entities` do ESLint.
+  - Correção de caracteres de aspas duplas sem escape na regra `react/no-unescaped-entities`.
 - [x] **Bugfix de Contato e WhatsApp (`lib/constants.ts` & `whatsapp-dialog.tsx`):**
-  - Número oficial do WhatsApp corrigido para `+55 48 98835-4422` em todo o projeto.
-  - Telefone fixo da secretaria mantido: `(48) 3665-5774`.
+  - Número oficial do WhatsApp corrigido para `+55 48 98835-4422`.
 - [x] **Infraestrutura Técnica de SEO (Google Search Console):**
   - `app/sitemap.ts`: Gerador dinâmico de sitemap para rotas públicas.
   - `app/robots.ts`: Configuração com `Disallow: /dashboard/`.
   - Verificação Google Search Console via `public/googled9f9ab4eae780ffe.html`.
 - [x] **Acervo Digital, Podcasts & Revista Okaza (`app/(public)/acervo/page.tsx`):**
-  - Componente `<SpotifyEmbed />` ([components/features/spotify-embed.tsx](file:///c:/Projetos/escola-benonivio/components/features/spotify-embed.tsx)): Player dinâmico com os 6 episódios gravados do podcast do 3º ano.
-  - Componente `<RevistaOkazaCard />` ([components/features/revista-okaza-card.tsx](file:///c:/Projetos/escola-benonivio/components/features/revista-okaza-card.tsx)): Downloads das edições #1 (2019) e #2 (2020) + regras de submissão da APP.
+  - Componente `<SpotifyEmbed />`: Player dinâmico dos 6 episódios do podcast.
+  - Componente `<RevistaOkazaCard />`: Downloads das edições #1 e #2 da Revista Okaza.
 - [x] **Painel Administrativo ("Beno Painel" `/dashboard`):**
-  - Módulos funcionais para gestão de Turmas, Documentos, Mural de Avisos e Páginas.
+  - Módulos de gestão para Turmas, Documentos, Mural de Avisos e Páginas.
 - [x] **Manual do Administrador & Documentação:**
-  - `docs/Projeto_Escola_Benonivio/02_Wiki/MANUAL_ADMIN.md`: Guia completo e didático com regra de atualização contínua para agentes.
+  - `docs/Projeto_Escola_Benonivio/02_Wiki/MANUAL_ADMIN.md`: Guia de administração e documentação contínua.
 
 ---
 

@@ -19,7 +19,8 @@ export const getDocumentosPublic = unstable_cache(
     const { data, error } = await supabasePublic
       .from('escola_documentos')
       .select('id, titulo, url_arquivo, categoria, created_at')
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(100);
 
     if (error) {
       console.error('Erro ao buscar documentos públicos:', error);

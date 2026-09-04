@@ -27,8 +27,9 @@ export async function getDocumentosAdmin() {
     const supabase = createClient();
     const { data, error } = await supabase
       .from('escola_documentos')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .select('id, titulo, url_arquivo, categoria, created_at')
+      .order('created_at', { ascending: false })
+      .limit(200);
 
     if (error) {
       console.error('[DATABASE ERROR] getDocumentosAdmin:', error);

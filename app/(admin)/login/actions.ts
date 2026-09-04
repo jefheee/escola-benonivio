@@ -3,8 +3,15 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
+import { z } from 'zod';
 import { loginRateLimiter } from '@/lib/rate-limit';
 import { validateApiIsolation } from '@/lib/env-guard';
+import { sanitizeString } from '@/lib/sanitize';
+
+const loginSchema = z.object({
+  email: z.string().trim().email('E-mail em formato inválido.').max(255),
+  password: z.string().min(1, 'A senha é obrigatória.').max(128),
+}).strict();
 
 export async function login(prevState: unknown, formData: FormData) {
   // 1. API Key Isolation Check
@@ -24,14 +31,20 @@ export async function login(prevState: unknown, formData: FormData) {
     };
   }
 
-  // 4. Input Sanitization & Validation
-  const email = (formData.get('email') as string)?.trim();
-  const password = formData.get('password') as string;
+  // 4. Input Sanitization & Strict Zod Validation
+  const rawEmail = sanitizeString(formData.get('email') as string);
+  const rawPassword = formData.get('password') as string;
 
-  if (!email || !password) {
-    return { error: 'E-mail e senha são obrigatórios.' };
+  const validation = loginSchema.safeParse({
+    email: rawEmail,
+    password: rawPassword,
+  });
+
+  if (!validation.success) {
+    return { error: validation.error.issues[0]?.message || 'Dados de login inválidos.' };
   }
 
+  const { email, password } = validation.data;
   const supabase = createClient();
 
   // 5. Authenticate via Supabase Auth
@@ -41,10 +54,9 @@ export async function login(prevState: unknown, formData: FormData) {
   });
 
   if (error) {
-    if (error.message.includes('Invalid login credentials')) {
-      return { error: 'E-mail ou senha incorretos. Por favor, tente novamente.' };
-    }
-    return { error: error.message };
+    // Anti-Account Enumeration & Defensive Logging
+    console.error('[AUTH FAILURE] Falha na autenticação do IP', clientIp, error.message);
+    return { error: 'E-mail ou senha incorretos. Por favor, verifique suas credenciais.' };
   }
 
   redirect('/dashboard');
@@ -52,6 +64,7 @@ export async function login(prevState: unknown, formData: FormData) {
 
 export async function logout() {
   const supabase = createClient();
-  await supabase.auth.signOut();
+  // Revoke all sessions globally on server-side
+  await supabase.auth.signOut({ scope: 'global' });
   redirect('/login');
 }

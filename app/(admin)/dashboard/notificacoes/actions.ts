@@ -29,8 +29,9 @@ export async function getNotificacoesAdmin() {
     const supabase = createClient();
     const { data, error } = await supabase
       .from('escola_notificacoes')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .select('id, titulo, mensagem, importancia, ativa, created_at')
+      .order('created_at', { ascending: false })
+      .limit(100);
 
     if (error) {
       console.error('[DATABASE ERROR] getNotificacoesAdmin:', error);
