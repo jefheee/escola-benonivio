@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { z } from 'zod';
-import { sanitizeString, UUID_REGEX } from '@/lib/sanitize';
+import { sanitizeString, UUID_REGEX, isValidSafeUrl } from '@/lib/sanitize';
 
 export interface EscolaDocumento {
   id: string;
@@ -16,7 +16,7 @@ export interface EscolaDocumento {
 const documentoSchema = z.object({
   id: z.string().regex(UUID_REGEX, 'ID inválido.').optional().or(z.literal('')),
   titulo: z.string().min(1, 'Título é obrigatório.').max(200),
-  url_arquivo: z.string().url('URL do arquivo inválida.'),
+  url_arquivo: z.string().refine(isValidSafeUrl, 'URL do arquivo inválida. Deve utilizar https:// ou http://'),
   categoria: z.string().nullable().optional(),
 }).strict();
 
@@ -25,6 +25,11 @@ const idSchema = z.string().regex(UUID_REGEX, 'ID inválido.');
 export async function getDocumentosAdmin() {
   try {
     const supabase = createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      throw new Error('Acesso não autorizado.');
+    }
+
     const { data, error } = await supabase
       .from('escola_documentos')
       .select('id, titulo, url_arquivo, categoria, created_at')

@@ -27,6 +27,11 @@ const idSchema = z.string().regex(UUID_REGEX, 'ID inválido.');
 export async function getNotificacoesAdmin() {
   try {
     const supabase = createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      throw new Error('Acesso não autorizado.');
+    }
+
     const { data, error } = await supabase
       .from('escola_notificacoes')
       .select('id, titulo, mensagem, importancia, ativa, created_at')

@@ -44,4 +44,7 @@ next-env.d.ts
 docs/**/.obsidian/
 docs/**/Segurança.md
 docs/**/Senhas.md
+docs/security-audit/.venv/
+.venv/
+
 

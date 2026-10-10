@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { ChevronLeft, MessageSquare, ExternalLink, Calendar, Megaphone, Link2 } from 'lucide-react';
 import { getTurmaByIdPublic, getTurmaPostsPublic } from '@/lib/data/turmas';
 import FormattedText from '@/components/ui/formatted-text';
+import { isValidSafeUrl, sanitizeHref } from '@/lib/sanitize';
 
 export const dynamic = 'force-dynamic';
 
@@ -85,20 +86,22 @@ export default async function TurmaDetailPage({ params }: PageProps) {
               <span>Recursos Extras</span>
             </h3>
 
-            {turma.outros_links && turma.outros_links.length > 0 ? (
+            {turma.outros_links && turma.outros_links.filter((l) => isValidSafeUrl(l.url)).length > 0 ? (
               <div className="flex flex-col gap-2.5">
-                {turma.outros_links.map((link, idx) => (
-                  <a
-                    key={idx}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full flex items-center justify-between p-3 bg-slate-50 hover:bg-white border border-slate-100 hover:border-[#00185f]/30 rounded-xl text-xs font-bold text-slate-700 hover:text-[#00185f] shadow-inner hover:shadow transition-all group"
-                  >
-                    <span className="truncate pr-4">{link.titulo}</span>
-                    <ExternalLink className="h-3.5 w-3.5 text-slate-400 group-hover:text-secondary transition-colors shrink-0" />
-                  </a>
-                ))}
+                {turma.outros_links
+                  .filter((link) => isValidSafeUrl(link.url))
+                  .map((link, idx) => (
+                    <a
+                      key={idx}
+                      href={sanitizeHref(link.url)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full flex items-center justify-between p-3 bg-slate-50 hover:bg-white border border-slate-100 hover:border-[#00185f]/30 rounded-xl text-xs font-bold text-slate-700 hover:text-[#00185f] shadow-inner hover:shadow transition-all group"
+                    >
+                      <span className="truncate pr-4">{link.titulo}</span>
+                      <ExternalLink className="h-3.5 w-3.5 text-slate-400 group-hover:text-secondary transition-colors shrink-0" />
+                    </a>
+                  ))}
               </div>
             ) : (
               <p className="text-xs text-slate-400 font-medium py-2">
@@ -168,10 +171,10 @@ export default async function TurmaDetailPage({ params }: PageProps) {
                       </div>
                     )}
 
-                    {post.link_referencia && (
+                    {post.link_referencia && isValidSafeUrl(post.link_referencia) && (
                       <div className="mt-3">
                         <a
-                          href={post.link_referencia}
+                          href={sanitizeHref(post.link_referencia)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1.5 text-xs font-bold text-[#00185f] hover:text-secondary bg-slate-50 hover:bg-slate-100 border border-slate-200 px-3.5 py-2 rounded-lg transition-colors outline-none"

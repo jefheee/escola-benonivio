@@ -1,7 +1,7 @@
 # 📌 CONTEXTO ATUAL DO PROJETO - EEB PROFESSOR BENONÍVIO JOÃO MARTINS
 
-**Última Atualização:** 04 de Setembro de 2026  
-**Status do Projeto:** Em Produção / Blindagem de Segurança 100% Concluída & Correções de Layout/Upload Ativas  
+**Última Atualização:** 10 de Outubro de 2026  
+**Status do Projeto:** Em Produção / Auditoria de Segurança Completa Concluída & Relatório PDF Publicado  
 **Arquitetura:** Docs as Code (Fonte de Verdade)
 
 ---
@@ -134,6 +134,36 @@
   - **Remoção de Scroll Horizontal nas Tabelas Admin:** Removidas as classes `min-w-[850px]` e `whitespace-nowrap` em `avisos-manager.tsx` e `acervo-manager.tsx`. Títulos e resumos agora quebram linha naturalmente ocupando 100% da largura do contêiner sem exigir rolagem horizontal em telas de desktop ou laptops.
 - [x] **Manual do Administrador & Documentação:**
   - `docs/Projeto_Escola_Benonivio/02_Wiki/MANUAL_ADMIN.md`: Atualizado com as instruções de uso do novo módulo de Cardápio Inteligente com IA e edição manual.
+- [x] **Auditoria Completa de Segurança & Emissão de Relatório Executivo em PDF (`docs/security-audit/`):**
+  - Realizada auditoria profunda de código (SAST) e verificação das políticas de banco de dados (`pg_policies` no Supabase) cobrindo as 5 categorias críticas:
+    1. Banco sem tranca (RLS e isolamento de tenant/owner)
+    2. Permissão definida no navegador vs. backend
+    3. IDOR (Insecure Direct Object References) em Server Actions
+    4. Chaves expostas e segredos em código/build/histórico
+    5. Inputs sem tratamento (XSS, URLs `javascript:`, regex sanitization)
+  - Identificados 8 achados técnicos (2 Críticos, 3 Altos, 2 Médios, 1 Baixo) e catalogados 6 pontos fortes estruturais de blindagem.
+  - Criado script gerador autônomo em Python (`docs/security-audit/generate_audit_report.py`) em ambiente isolado (`.venv`).
+  - Gerado relatório executivo formal em PDF A4 diagramado (`docs/security-audit/relatorio-auditoria-seguranca.pdf`), com gráficos de rosca e barras, tabela de achados, plano de remediação P1/P2/P3 e 5 issues completas formatadas para GitHub pronta entrega.
+- [x] **Resolução Integral das Vulnerabilidades de Segurança (Hardening 100% Aplicado & Validado):**
+  - **1. Banco sem Tranca (RLS Hardened no Supabase):**
+    - Removidas todas as políticas públicas duplicadas com `USING (true)` no PostgreSQL ativo do Supabase e sincronizado `RLS_policies.sql`.
+    - Políticas de `SELECT` para o papel `anon` agora restringem estritamente a registros com `status = 'ativo'` e data de publicação <= CURRENT_TIMESTAMP (`escola_avisos`, `escola_acervo`, `escola_turmas_posts`) e `ativa = true` (`escola_notificacoes`). Rascunhos, agendados e lixeira protegidos contra queries anônimas diretas no PostgREST.
+    - Políticas de leitura completa para administradores autenticados (`authenticated`) preservadas para o dashboard.
+    - Storage (`escola_midias`) limpo de regras redundantes.
+  - **2. Permissão no Servidor (Server Actions Bloqueadas para Anônimos):**
+    - As 7 Server Actions administrativas de leitura (`getAvisosAdmin`, `getAcervoAdmin`, `getDocumentosAdmin`, `getNotificacoesAdmin`, `getPaginasAdmin`, `getTurmasAdmin`, `getPostsAdmin`) agora invocam e validam compulsivamente `supabase.auth.getUser()`, abortando qualquer requisição RPC não autenticada via header `Next-Action`.
+  - **3. Mitigação de IDOR com Escopo Relacional Composto:**
+    - Ações de mutação e remoção de posts (`savePost`, `moveToTrashPost`, `restorePost`, `deletePostPermanently` em `turmas/actions.ts`) agora utilizam filtro composto `.eq('id', validId.data).eq('turma_id', validTurmaId.data)`.
+  - **4. Inputs sem Tratamento & XSS por URLs Maliciosas:**
+    - Sanitização em `lib/sanitize.ts` convertida para loop recursivo, eliminando vetores de bypass como `javajavascript:script:alert(1)`.
+    - Criadas as funções `isValidSafeUrl()` e `sanitizeHref()`.
+    - Schemas Zod de links e mídias agora usam validação estrita de HTTP/HTTPS com `isValidSafeUrl`.
+    - Componente de visualização de turmas (`app/(public)/turmas/[id]/page.tsx`) filtra e sanitiza URLs antes da renderização no atributo `href`.
+  - **5. Guarda de Segredos em Build-Time & Fail-Fast:**
+    - Inserida verificação de isolamento em tempo de compilação no topo de `next.config.mjs`, abortando o comando `next build` caso qualquer variável `NEXT_PUBLIC_` contenha padrões de credenciais secretas.
+    - Criado singleton validado `lib/supabase/public.ts` com asserção fail-fast de variáveis de ambiente.
+    - Criado documento de arquitetura `docs/Projeto_Escola_Benonivio/00_Schema/Security_Architecture.md`.
+    - Validado com `npx tsc --noEmit` (0 erros) e `npm run build` (20/20 rotas compiladas com sucesso).
 
 ---
 
