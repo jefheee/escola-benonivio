@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { z } from 'zod';
-import { sanitizeString, sanitizeInput, UUID_REGEX } from '@/lib/sanitize';
+import { sanitizeString, sanitizeInput, UUID_REGEX, isValidSafeUrl } from '@/lib/sanitize';
 
 export interface EscolaTurma {
   id: string;
@@ -45,7 +45,7 @@ const turmaSchema = z.object({
     .array(
       z.object({
         titulo: z.string().min(1),
-        url: z.string().url(),
+        url: z.string().refine(isValidSafeUrl, 'URL deve ser válida e utilizar o protocolo https:// ou http://'),
       })
     )
     .optional()
@@ -57,9 +57,9 @@ const postSchema = z.object({
   turma_id: z.string().regex(UUID_REGEX, 'ID de turma inválido.'),
   titulo: z.string().min(1, 'Título é obrigatório.').max(200),
   conteudo: z.string().nullable().optional(),
-  link_referencia: z.string().url('Link de referência inválido.').nullable().optional(),
-  imagem_url: z.string().nullable().optional(),
-  imagens: z.array(z.string().url('URL de imagem inválida.')).optional().default([]),
+  link_referencia: z.string().refine((val) => !val || isValidSafeUrl(val), 'Link de referência deve utilizar https:// ou http://').nullable().optional(),
+  imagem_url: z.string().refine((val) => !val || isValidSafeUrl(val), 'URL de imagem inválida.').nullable().optional(),
+  imagens: z.array(z.string().refine(isValidSafeUrl, 'URL de imagem inválida.')).optional().default([]),
   data_publicacao: z.string().optional(),
   data_expiracao: z.string().nullable().optional(),
   status: z.enum(['ativo', 'lixeira']).default('ativo'),
@@ -82,6 +82,11 @@ function getStoragePathFromUrl(url: string, bucketName: string = 'escola_midias'
 export async function getTurmasAdmin() {
   try {
     const supabase = createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      throw new Error('Acesso não autorizado.');
+    }
+
     const { data, error } = await supabase
       .from('escola_turmas')
       .select('id, ano, nome, turno, whatsapp_link, outros_links, created_at')
@@ -204,6 +209,11 @@ export async function getPostsAdmin(turmaIdRaw: string) {
     if (!validTurmaId.success) throw new Error('ID de turma inválido.');
 
     const supabase = createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      throw new Error('Acesso não autorizado.');
+    }
+
     const { data, error } = await supabase
       .from('escola_turmas_posts')
       .select('id, turma_id, titulo, conteudo, link_referencia, imagem_url, imagens, data_publicacao, data_expiracao, status, created_at')
@@ -273,7 +283,8 @@ export async function savePost(prevState: unknown, formData: FormData) {
       const { error } = await supabase
         .from('escola_turmas_posts')
         .update(postData)
-        .eq('id', id);
+        .eq('id', id)
+        .eq('turma_id', turma_id);
 
       if (error) {
         console.error('[DATABASE ERROR] update post:', error);
@@ -313,7 +324,8 @@ export async function moveToTrashPost(idRaw: string, turmaIdRaw: string) {
     const { error } = await supabase
       .from('escola_turmas_posts')
       .update({ status: 'lixeira' })
-      .eq('id', validId.data);
+      .eq('id', validId.data)
+      .eq('turma_id', validTurmaId.data);
 
     if (error) {
       console.error('[DATABASE ERROR] moveToTrashPost:', error);
@@ -345,7 +357,8 @@ export async function restorePost(idRaw: string, turmaIdRaw: string) {
     const { error } = await supabase
       .from('escola_turmas_posts')
       .update({ status: 'ativo' })
-      .eq('id', validId.data);
+      .eq('id', validId.data)
+      .eq('turma_id', validTurmaId.data);
 
     if (error) {
       console.error('[DATABASE ERROR] restorePost:', error);
@@ -378,17 +391,19 @@ export async function deletePostPermanently(idRaw: string, turmaIdRaw: string) {
       .from('escola_turmas_posts')
       .select('imagens')
       .eq('id', validId.data)
+      .eq('turma_id', validTurmaId.data)
       .single();
 
-    if (fetchError) {
+    if (fetchError || !post) {
       console.error('[DATABASE ERROR] fetch post for deletion:', fetchError);
-      return { error: 'Erro ao localizar imagens do recado.' };
+      return { error: 'Recado não localizado ou não vinculado à turma informada.' };
     }
 
     const { error: deleteError } = await supabase
       .from('escola_turmas_posts')
       .delete()
-      .eq('id', validId.data);
+      .eq('id', validId.data)
+      .eq('turma_id', validTurmaId.data);
 
     if (deleteError) {
       console.error('[DATABASE ERROR] delete post row:', deleteError);

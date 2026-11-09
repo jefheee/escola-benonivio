@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { z } from 'zod';
-import { sanitizeString, sanitizeInput, UUID_REGEX } from '@/lib/sanitize';
+import { sanitizeString, sanitizeInput, UUID_REGEX, isValidSafeUrl } from '@/lib/sanitize';
 
 export interface EscolaAviso {
   id: string;
@@ -28,8 +28,8 @@ const avisoSchema = z.object({
   conteudo: z.string().nullable().optional(),
   destaque_home: z.boolean().default(false),
   publicado: z.boolean().default(true),
-  imagem_url: z.string().nullable().optional(),
-  imagens: z.array(z.string().url('URL de imagem inválida.')).optional().default([]),
+  imagem_url: z.string().refine((val) => !val || isValidSafeUrl(val), 'URL de imagem inválida.').nullable().optional(),
+  imagens: z.array(z.string().refine(isValidSafeUrl, 'URL de imagem inválida.')).optional().default([]),
   data_publicacao: z.string().optional(),
   data_expiracao: z.string().nullable().optional(),
   status: z.enum(['ativo', 'lixeira']).default('ativo'),
@@ -50,6 +50,11 @@ function getStoragePathFromUrl(url: string, bucketName: string = 'escola_midias'
 export async function getAvisosAdmin() {
   try {
     const supabase = createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      throw new Error('Acesso não autorizado.');
+    }
+
     const { data, error } = await supabase
       .from('escola_avisos')
       .select('id, titulo, resumo, conteudo, destaque_home, publicado, imagem_url, imagens, data_publicacao, data_expiracao, status, created_at, updated_at')

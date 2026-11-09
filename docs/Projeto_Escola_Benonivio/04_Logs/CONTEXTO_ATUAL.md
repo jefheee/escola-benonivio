@@ -1,7 +1,7 @@
 # 📌 CONTEXTO ATUAL DO PROJETO - EEB PROFESSOR BENONÍVIO JOÃO MARTINS
 
-**Última Atualização:** 04 de Setembro de 2026  
-**Status do Projeto:** Em Produção / Blindagem de Segurança 100% Concluída & Correções de Layout/Upload Ativas  
+**Última Atualização:** 10 de Outubro de 2026  
+**Status do Projeto:** Em Produção / Blindagem de Segurança Enterprise Concluída & Estável  
 **Arquitetura:** Docs as Code (Fonte de Verdade)
 
 ---
@@ -134,6 +134,24 @@
   - **Remoção de Scroll Horizontal nas Tabelas Admin:** Removidas as classes `min-w-[850px]` e `whitespace-nowrap` em `avisos-manager.tsx` e `acervo-manager.tsx`. Títulos e resumos agora quebram linha naturalmente ocupando 100% da largura do contêiner sem exigir rolagem horizontal em telas de desktop ou laptops.
 - [x] **Manual do Administrador & Documentação:**
   - `docs/Projeto_Escola_Benonivio/02_Wiki/MANUAL_ADMIN.md`: Atualizado com as instruções de uso do novo módulo de Cardápio Inteligente com IA e edição manual.
+- [x] **Implementação de Blindagem e Arquitetura de Segurança Enterprise:**
+  - **1. Políticas RLS Granulares no Supabase:**
+    - Políticas ativas e sincronizadas no PostgreSQL via `RLS_policies.sql`.
+    - Políticas de `SELECT` para o papel `anon` com restrição aos registros com `status = 'ativo'` e data de publicação válida em `escola_avisos`, `escola_acervo`, `escola_turmas_posts` e `ativa = true` em `escola_notificacoes`.
+    - Políticas de leitura para administradores autenticados (`authenticated`) preservadas para o painel de controle.
+    - Políticas de controle do Supabase Storage (`escola_midias`) unificadas.
+  - **2. Validação Autoritativa no Backend (Server Actions):**
+    - Todas as Server Actions administrativas em `app/(admin)/dashboard/*/actions.ts` utilizam autenticação via `supabase.auth.getUser()`.
+  - **3. Integridade Relacional e Escopo em Recursos de Turmas:**
+    - Ações de gerenciamento de posts em `turmas/actions.ts` com validação de escopo composto `.eq('id', validId.data).eq('turma_id', validTurmaId.data)`.
+  - **4. Sanitização e Validação Estrita de URLs:**
+    - Módulo `lib/sanitize.ts` com higienização estrita e validação de URLs HTTP/HTTPS (`isValidSafeUrl` e `sanitizeHref`).
+    - Validação de URLs em schemas Zod e no componente `turmas/[id]/page.tsx`.
+  - **5. Isolamento de Variáveis e Proteção em Build-Time:**
+    - Validação de isolamento de variáveis de ambiente integrada no `next.config.mjs`.
+    - Inicialização centralizada com asserção fail-fast em `lib/supabase/public.ts`.
+    - Documento de especificação técnica criado em `docs/Projeto_Escola_Benonivio/00_Schema/Security_Architecture.md`.
+    - Compilação validada com sucesso (`npx tsc --noEmit` e `npm run build`).
 
 ---
 

@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { z } from 'zod';
-import { sanitizeString, sanitizeInput, UUID_REGEX } from '@/lib/sanitize';
+import { sanitizeString, sanitizeInput, UUID_REGEX, isValidSafeUrl } from '@/lib/sanitize';
 
 export interface EscolaAcervoItem {
   id: string;
@@ -25,7 +25,7 @@ const acervoSchema = z.object({
   titulo: z.string().min(1, 'Título é obrigatório.').max(200),
   descricao: z.string().nullable().optional(),
   status: z.enum(['ativo', 'arquivado', 'lixeira']).default('ativo'),
-  imagens: z.array(z.string().url('URL de imagem inválida.')).optional().default([]),
+  imagens: z.array(z.string().refine(isValidSafeUrl, 'URL de imagem inválida.')).optional().default([]),
   data_publicacao: z.string().optional(),
 }).strict();
 
@@ -45,6 +45,11 @@ function getStoragePathFromUrl(url: string, bucketName: string = 'escola_midias'
 export async function getAcervoAdmin() {
   try {
     const supabase = createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      throw new Error('Acesso não autorizado.');
+    }
+
     const { data, error } = await supabase
       .from('escola_acervo')
       .select('id, ano, categoria, titulo, descricao, imagens, data_publicacao, status, created_at')

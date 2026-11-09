@@ -4,19 +4,63 @@
  */
 
 /**
- * Sanitizes a single string by stripping dangerous HTML tags, javascript: protocols, and unsafe control chars.
+ * Validates that a string is a safe HTTP or HTTPS URL, or an internal safe relative path.
+ * Rejects javascript:, data:, vbscript:, and arbitrary schemas.
+ */
+export function isValidSafeUrl(url: string | null | undefined): boolean {
+  if (!url || typeof url !== 'string') return false;
+  const trimmed = url.trim();
+  if (trimmed.length === 0) return false;
+
+  // Safe internal relative path (must not start with // which is protocol-relative)
+  if (trimmed.startsWith('/') && !trimmed.startsWith('//')) {
+    return true;
+  }
+
+  try {
+    const parsed = new URL(trimmed);
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Ensures an href attribute is completely safe. Returns '#' if unsafe or invalid.
+ */
+export function sanitizeHref(url: string | null | undefined): string {
+  if (!url || typeof url !== 'string') return '#';
+  const trimmed = url.trim();
+  if (isValidSafeUrl(trimmed)) {
+    return trimmed;
+  }
+  return '#';
+}
+
+/**
+ * Sanitizes a single string by recursively stripping dangerous HTML tags, javascript: protocols, and unsafe control chars.
  */
 export function sanitizeString(input: string | null | undefined): string {
   if (typeof input !== 'string') return '';
 
-  return input
+  let sanitized = input
     .trim()
     // Remove control characters (except newlines/tabs)
-    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
-    // Remove potential inline script tags and script protocols
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    .replace(/javascript:/gi, '')
-    .replace(/on\w+\s*=/gi, '');
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+
+  // Recursive loop to eliminate nested/bypass payloads like javajavascript:script:
+  let prev = '';
+  while (prev !== sanitized) {
+    prev = sanitized;
+    sanitized = sanitized
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      .replace(/javascript\s*:/gi, '')
+      .replace(/data\s*:\s*text\/html/gi, '')
+      .replace(/vbscript\s*:/gi, '')
+      .replace(/on\w+\s*=/gi, '');
+  }
+
+  return sanitized;
 }
 
 /**

@@ -1,3 +1,25 @@
+// ==============================================================================
+// BUILD-TIME SECURITY ISOLATION GUARD
+// Asserts that no private keys, database service credentials, or AI secret keys
+// leak into static client bundles via accidental NEXT_PUBLIC_ prefixes.
+// ==============================================================================
+const publicEnvKeys = Object.keys(process.env).filter((key) =>
+  key.startsWith('NEXT_PUBLIC_')
+);
+
+for (const key of publicEnvKeys) {
+  const value = process.env[key] || '';
+  const containsSecretName = /service_role|secret|private|sk_live|sk_test|ai_api_key|gemini_api_key|groq_api_key/i.test(key);
+  const containsSecretValue = /service_role|secret|sk_live_|sk_test_|gsk_|AIzaSy/i.test(value);
+
+  if (containsSecretName || containsSecretValue) {
+    console.error(`\x1b[31m[CRITICAL SECURITY ALERT] Build-Time leakage detected in environment variable "${key}". Private keys must NEVER be prefixed with NEXT_PUBLIC_.\x1b[0m`);
+    throw new Error(
+      `[SECURITY BUILD GUARD] Build process aborted to protect private secrets from client exposure via "${key}".`
+    );
+  }
+}
+
 const securityHeaders = [
   {
     key: 'Content-Security-Policy',

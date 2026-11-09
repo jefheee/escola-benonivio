@@ -1,10 +1,5 @@
 import { unstable_cache } from 'next/cache';
-import { createClient as createSupabaseClient } from '@supabase/supabase-js';
-
-const supabasePublic = createSupabaseClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import { supabasePublic } from '@/lib/supabase/public';
 
 export interface EscolaPaginaConteudoPublic {
   slug: string;

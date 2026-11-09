@@ -19,6 +19,11 @@ const paginaSchema = z.object({
 export async function getPaginasAdmin() {
   try {
     const supabase = createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      throw new Error('Acesso não autorizado.');
+    }
+
     const { data, error } = await supabase
       .from('escola_conteudo_paginas')
       .select('slug, conteudo_html, updated_at')
